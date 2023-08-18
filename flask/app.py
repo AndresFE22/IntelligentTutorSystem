@@ -86,6 +86,69 @@ def diagnosis_lowlvl():
     session['recommended_path'] = recommended_path
     session['incorrect_activities'] = incorrect_answer
     return jsonify(response, recommended_path, 'Done!')
+
+@app.route('/diagnosisEvaluation', methods=['POST'])
+def diagnosisEvaluation():
+    questions = [
+        {"activity_name": "t1", "correct_answer": "a"},
+        {"activity_name": "t2", "correct_answer": "c"},
+        {"activity_name": "t3", "correct_answer": "a"},
+        {"activity_name": "t4", "correct_answer": "d"},
+        {"activity_name": "t5", "correct_answer": "a"},
+        {"activity_name": "t6", "correct_answer": "d"},
+        {"activity_name": "t7", "correct_answer": "b"},
+        {"activity_name": "t8", "correct_answer": "b"},
+        {"activity_name": "t9", "correct_answer": "c"},
+        {"activity_name": "t10", "correct_answer": "a"},
+        {"activity_name": "t11", "correct_answer": "c"},
+        {"activity_name": "t12", "correct_answer": "a"},
+        {"activity_name": "t13", "correct_answer": "d"},
+        {"activity_name": "t14", "correct_answer": "a"},
+        {"activity_name": "t15", "correct_answer": "d"},
+        {"activity_name": "t16", "correct_answer": "b"},
+        {"activity_name": "t17", "correct_answer": "b"},
+        {"activity_name": "t18", "correct_answer": "c"},
+        {"activity_name": "t19", "correct_answer": "a"},
+        {"activity_name": "t20", "correct_answer": "c"},
+        {"activity_name": "t21", "correct_answer": "a"},
+        {"activity_name": "t22", "correct_answer": "d"},
+        {"activity_name": "t23", "correct_answer": "a"},
+        {"activity_name": "t24", "correct_answer": "d"},
+        {"activity_name": "t25", "correct_answer": "b"},
+        {"activity_name": "t26", "correct_answer": "b"},
+        {"activity_name": "t27", "correct_answer": "c"}
+    ]
+
+    incorrect_activities = {}
+    incorrect_answer = []
+    data = request.json
+    print('data', data)
+    answers = data.get('answers', [])
+    print('answers', answers)
+    
+    for i, student_answer in enumerate(answers, start=1):
+        question = questions[i - 1]
+        activity_name = question['activity_name']
+
+        if student_answer == question["correct_answer"]:
+            print("Student Answer:", student_answer)
+            print("Correct Answer for", activity_name)
+            learning_goals.mark_activity_completed(activity_name)  
+        else:
+            print("Incorrect Answer for", activity_name)
+            incorrect_activities[activity_name] = student_answer
+
+    for activity_name, answer in incorrect_activities.items():
+        incorrect_answer.append(activity_name)
+
+    print(incorrect_answer)   
+        
+    response = learning_goals.print_learning_goals()
+    recommended_path = learning_goals.recommend_learning_path()
+    
+    session['recommended_path'] = recommended_path
+    session['incorrect_activities'] = incorrect_answer
+    return jsonify(response, recommended_path, 'Done!')
     
 @cross_origin
 @app.route('/test', methods=['POST', 'GET'])
@@ -163,8 +226,8 @@ def activity():
     last_item = style_list_n.pop()
     style_list = style_list_n
     #nav_menu = last_item['dominant_style']
-    #nav_menu = 'Secuencial'
-    nav_menu = 'Global'
+    nav_menu = 'Secuencial'
+    #nav_menu = 'Global'
 
 
 
@@ -196,14 +259,16 @@ def activity():
     print('incorrect_activities', incorrect_activities)
 
     
-    incorrect_activities.append('send')
-    data_sequential = render_template("ActivitySequential.html", resources=resource_list)
-    data_global = render_template("ActivityGlobal.html", resources=resource_list)
-    data_incorrect_answer = render_template('diagnosisStateEvaluation.html', incorrect_activities=incorrect_activities )
-    print("icorrect:", data_incorrect_answer)
+    print("icorrect:", incorrect_activities)
+    
+    data_incorrect_answer = [int(item[1:]) for item in incorrect_activities if item.startswith('t') and item[1:].isdigit()]
 
-
-    return render_template('activity.html', nav_menu=nav_menu, data_sequential=data_sequential, data_global=data_global, data_incorrect_answer=data_incorrect_answer)
+    return jsonify({
+        'nav_menu': nav_menu,
+        'data_sequential': resource_list,
+        'data_global': resource_list,
+        'data_incorrect_answer': data_incorrect_answer
+    })
 
 
 if __name__ == '__main__':

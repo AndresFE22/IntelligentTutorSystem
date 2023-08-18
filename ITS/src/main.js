@@ -9,6 +9,13 @@ import Home from "./components/Home.vue";
 import DiagnosisState from "./components/diagnosisState.vue";
 import DiagnosisStyles from "./components/diagnosisStyles.vue"; 
 import responseStyles from "./components/responseStyles.vue"
+import ActivityGlobal from "./components/ActivityGlobal.vue"
+import ActivitySequential from "./components/ActivitySequential.vue"
+import diagnosisStateEvaluation from "./components/diagnosisStateEvaluation.vue"
+import ActivityITS from "./components/ActivityITS.vue"
+
+
+
 
 Vue.config.productionTip = false;
 
@@ -36,6 +43,26 @@ const routes = [
     path: "/ResponseStyles",
     name: "ResponseStyles",
     component: responseStyles
+  },
+  {
+    path: "/ActivityGlobal",
+    name: "ActivityGlobal",
+    component: ActivityGlobal
+  },
+  {
+    path: "/ActivitySequential",
+    name: "ActivitySequential",
+    component: ActivitySequential
+  },
+  {
+    path: "/diagnosisStateEvaluation",
+    name: "diagnosisStateEvaluation",
+    component: diagnosisStateEvaluation
+  },
+  {
+    path: "/ActivityITS",
+    name: "ActivityITS",
+    component: ActivityITS
   }
 ];
 

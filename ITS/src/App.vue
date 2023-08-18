@@ -8,6 +8,7 @@
 </style>
 
 <script>
+
 export default {
   methods: {
     isActive(route) {

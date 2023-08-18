@@ -34,9 +34,9 @@
             <br>
           <h5>Your answers have been submitted. Thank you for completing the quiz!</h5>
           <br>
-          <h3>Do you want to see the results? press next</h3>
+          <h3>Now we start with the activities</h3>
           <br>
-            <router-link to="/ResponseStyles">
+            <router-link to="/ActivityITS">
               <button class="btn btn-primary">Submit Answers</button>
             </router-link>
           </div>
