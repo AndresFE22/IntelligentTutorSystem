@@ -1,0 +1,21 @@
+('Intuitivo', 'Activo', 'Visual')
+
+
+  
+
+  },
+    methods: {
+
+        axiosCallEvaluation(){
+            axios
+            .get('/api/Activity')
+            .then(response => {
+                this.hiddenQuestions  = response.data.data_incorrect_answer
+                console.log(response.data.data_incorrect_answer)
+                console.log("hidden", this.hiddenQuestions)
+
+            })
+            .catch(error => {
+                console.log(error, 'error al capturar respuestas incorrectas')
+            })
+        },

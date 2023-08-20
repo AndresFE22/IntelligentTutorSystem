@@ -1,5 +1,6 @@
 <template>
     <div class="container">
+      <div class="background-image"></div> 
       <ul class="nav nav-tabs menu-tabs">
         <li v-if="nav_menu === 'Secuencial'" class="nav-item">
           <a class="nav-link" :class="{ 'active': activeTab === 'sequentialTab' }" @click="changeTab('sequentialTab')">Secuencial</a>
@@ -12,10 +13,10 @@
         </li>
       </ul>
       <div id="ActivitySequential" v-show="activeTab === 'sequentialTab'">
-        <activity-sequential v-if="activeTab === 'sequentialTab'" />
+        <ResourcesViewsSequential v-if="activeTab === 'sequentialTab'" />
       </div>
       <div id="ActivityGlobal" v-show="activeTab === 'globalTab'">
-        <activity-global v-if="activeTab === 'globalTab'" />
+        <ResourcesViewsGlobal v-if="activeTab === 'globalTab'" />
       </div>
       <div id="diagnosisStateEvaluation" v-show="activeTab === 'evaluationTab'">
         <diagnosis-state-evaluation v-if="activeTab === 'evaluationTab'" />
@@ -24,15 +25,16 @@
   </template>
   
   <script>
-  import ActivityGlobal from './ActivityGlobal.vue';
-  import ActivitySequential from './ActivitySequential.vue';
+  
+  import ResourcesViewsGlobal from './ResourcesViewGlobal.vue';
+  import ResourcesViewsSequential from './ResourcesViewSequential.vue';
   import DiagnosisStateEvaluation from './diagnosisStateEvaluation.vue';
   import axios from 'axios';
   
   export default {
     components: {
-      ActivityGlobal,
-      ActivitySequential,
+      ResourcesViewsGlobal,
+      ResourcesViewsSequential,
       DiagnosisStateEvaluation,
     },
     data() {
@@ -69,6 +71,18 @@
   .menu-tabs .nav-link.active {
     font-weight: bold;
   }
+
+  .background-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("../assets/fondoGlobal.jpg");
+  background-size: cover;
+  z-index: -1; 
+   
+}
 
 
   </style>

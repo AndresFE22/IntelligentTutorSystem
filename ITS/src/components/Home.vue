@@ -105,6 +105,10 @@ export default {
 }
 }
 
+.container {
+  background-color: rgba(0, 0, 0, 0);
+}
+
 h1 {
   font-size: 30pt;
   font-weight: bold;

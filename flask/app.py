@@ -5,7 +5,10 @@ from flask_cors import CORS, cross_origin
 from werkzeug.datastructures import ImmutableMultiDict
 
 
-app = Flask(__name__)
+app = Flask(__name__,
+            static_folder='../ITS/src/learning_resources/',
+            static_url_path = '/static'
+)
 app.secret_key = 'your_secret_key'
 CORS(app)
 

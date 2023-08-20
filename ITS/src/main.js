@@ -9,8 +9,8 @@ import Home from "./components/Home.vue";
 import DiagnosisState from "./components/diagnosisState.vue";
 import DiagnosisStyles from "./components/diagnosisStyles.vue"; 
 import responseStyles from "./components/responseStyles.vue"
-import ActivityGlobal from "./components/ActivityGlobal.vue"
-import ActivitySequential from "./components/ActivitySequential.vue"
+import ActivityGlobal from "./components/ResourcesViewGlobal"
+import ActivitySequential from "./components/ResourcesViewSequential.vue"
 import diagnosisStateEvaluation from "./components/diagnosisStateEvaluation.vue"
 import ActivityITS from "./components/ActivityITS.vue"
 
