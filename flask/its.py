@@ -190,6 +190,8 @@ class LearningGoals:
             
         return results
     
+
+    
 class LearningResource:
     def __init__(self, host, user, password, database):
         try:

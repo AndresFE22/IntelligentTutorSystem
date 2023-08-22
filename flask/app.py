@@ -1,19 +1,39 @@
-from flask import Flask, render_template, request, jsonify, session, redirect, render_template_string
+from flask import Flask, render_template, request, jsonify, session
 from its import IntelligentTutor, LearningGoals, LearningResource
 import json
 from flask_cors import CORS, cross_origin
 from werkzeug.datastructures import ImmutableMultiDict
+from mysql.connector import errorcode
+from flask_bcrypt import Bcrypt
+import os
+import mysql.connector
 
 
 app = Flask(__name__,
             static_folder='../ITS/src/learning_resources/',
             static_url_path='/static'
             )
-app.secret_key = 'your_secret_key'
+app.secret_key = '10-03_02-15_7'
 CORS(app)
+bcrypt = Bcrypt(app)
+
+try:
+    connection = mysql.connector.connect(
+        host='localhost',
+        user='root',
+        password='',
+        database='climate'
+    )
+    print("conectada exitosamente")
+except mysql.connector.Error as err:
+    if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+        print("Error de acceso: Usuario o contraseña incorrectos")
+    elif err.errno == errorcode.ER_BAD_DB_ERROR:
+        print("La base de datos no existe")
+    else:
+        print(err)
 
 
-# Crea una instancia
 learning_goals = LearningGoals()
 
 
@@ -24,9 +44,34 @@ def init():
 
 
 @cross_origin
-@app.route('/diagnosisrender')
-def diagnosisState():
-    return render_template('diagnosisState.html')
+@app.route('/register', methods=['POST'])
+def register():
+    data = request.get_json()
+    hashed_password = bcrypt.generate_password_hash(data['password']).decode('utf-8')
+    cursor = connection.cursor()
+    query = "INSERT INTO student (name, user, password) VALUES (%s, %s, %s)"
+    cursor.execute(query, (data['name'], data['user'], hashed_password))
+    connection.commit
+    cursor.close()
+    return jsonify({'message': 'User registered successfully'})
+
+
+@cross_origin
+@app.route('/login', methods=['POST'])
+def login():
+    data = request.get_json()
+    cursor = connection.cursor(dictionary=True)
+    query = "SELECT * FROM student WHERE user = %s"
+    cursor.execute(query, (data['user'],))
+    user = cursor.fetchone()
+    cursor.close()
+    if user and bcrypt.check_password_hash(user['password'], data['password']):
+        return jsonify({'message': 'Login successful'})
+    else:
+        return jsonify({'message': 'Login failed'})
+
+
+
 
 
 @cross_origin

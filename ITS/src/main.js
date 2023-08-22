@@ -9,6 +9,8 @@ import { BootstrapVue, IconsPlugin } from 'bootstrap-vue';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
 import Home from "./components/Home.vue";
+import login from "./components/loginU.vue"
+import register from "./components/registerU.vue"
 import DiagnosisState from "./components/diagnosisState.vue";
 import DiagnosisStyles from "./components/diagnosisStyles.vue"; 
 import responseStyles from "./components/responseStyles.vue"
@@ -32,6 +34,16 @@ const routes = [
     path: "/",
     name: "Home",
     component: Home,
+  },
+  {
+    path: "/login",
+    name: "login",
+    component: login,
+  },
+  {
+    path: "/register",
+    name: "register",
+    component: register,
   },
   {
     path: "/DiagnosisState",
@@ -71,6 +83,7 @@ const routes = [
 ];
 
 const router = new VueRouter({
+  mode: 'history',
   routes,
 });
 const vuetify = new Vuetify();

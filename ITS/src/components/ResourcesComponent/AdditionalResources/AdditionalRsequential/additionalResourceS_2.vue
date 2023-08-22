@@ -8,50 +8,50 @@
                     :style="resourceCardStyle">
                     <div class="resource-content">
                         <div class="resource-data">
-                            <h2>{{ additionalResources[currentIndex].name }}</h2>
-                            <p>Goal: {{ additionalResources[currentIndex].goal }}</p>
-                            <p>Level: {{ additionalResources[currentIndex].lvl }}</p>
-                            <p>PT: {{ additionalResources[currentIndex].pt }}</p>
-                            <p>LC: {{ additionalResources[currentIndex].lc }}</p>
+                            <h2>{{ additionalResources[currentIndex][0].name }}</h2>
+                            <p>Goal: {{ additionalResources[currentIndex][0].goal }}</p>
+                            <p>Level: {{ additionalResources[currentIndex][0].lvl }}</p>
+                            <p>PT: {{ additionalResources[currentIndex][0].pt }}</p>
+                            <p>LC: {{ additionalResources[currentIndex][0].lc }}</p>
                         </div>
                         <div class="resource-media">
-                            <div v-if="additionalResources[currentIndex].url === 't1Illustrationlow'">
+                            <div v-if="additionalResources[currentIndex][0].url === 't1Illustrationlow'">
                                 <img src="../../../../learning_resources/t1.jpg" alt="imagen">
                             </div>
-                            <div v-else-if="additionalResources[currentIndex].url === 't1demonstrationlow'">
+                            <div v-else-if="additionalResources[currentIndex][0].url === 't1demonstrationlow'">
                                 <video src="../../../../learning_resources/t1.mp4" controls autoplay></video>
                             </div>
-                            <div v-else-if="additionalResources[currentIndex].url === 't1objectivelow'">
+                            <div v-else-if="additionalResources[currentIndex][0].url === 't1objectivelow'">
                                 <iframe src="../../../../learning_resources/t1.txt" frameborder="0"></iframe>
                             </div>
-                            <div v-else-if="additionalResources[currentIndex].url == 't1graphic_organizerlow'">
+                            <div v-else-if="additionalResources[currentIndex][0].url == 't1graphic_organizerlow'">
                                 <img src="../../../../learning_resources/t1.jpg" alt="imagen">
                             </div>
-                            <div v-else-if="additionalResources[currentIndex].url == 't1additional_questionlow'">
+                            <div v-else-if="additionalResources[currentIndex][0].url == 't1additional_questionlow'">
                                 <iframe src="../../../../learning_resources/t1.txt" frameborder="0"></iframe>
                             </div>
-                            <div v-else-if="additionalResources[currentIndex].url == 't1simulationslow'">
+                            <div v-else-if="additionalResources[currentIndex][0].url == 't1simulationslow'">
                                 <img src="../../../../learning_resources/t1.jpg" alt="imagen">
                             </div>
-                            <div v-else-if="additionalResources[currentIndex].url == 't1questions_and_answerslow'">
+                            <div v-else-if="additionalResources[currentIndex][0].url == 't1questions_and_answerslow'">
                                 <img src="../../../../learning_resources/t1.jpg" alt="imagen">
                             </div>
-                            <div v-else-if="additionalResources[currentIndex].url == 't1debatelow'">
+                            <div v-else-if="additionalResources[currentIndex][0].url == 't1debatelow'">
                                 <video src="../../../../learning_resources/t1.mp4"></video>
                             </div>
-                            <div v-else-if="additionalResources[currentIndex].url == 't1lecturelow'">
+                            <div v-else-if="additionalResources[currentIndex][0].url == 't1lecturelow'">
                                 <iframe src="../../../../learning_resources/t1.txt" frameborder="0"></iframe>
                             </div>
-                            <div v-else-if="additionalResources[currentIndex].url == 't1microworldlow'">
+                            <div v-else-if="additionalResources[currentIndex][0].url == 't1microworldlow'">
                                 <img src="../../../../learning_resources/t1.jpg" alt="imagen">
                             </div>
-                            <div v-else-if="additionalResources[currentIndex].url == 't1hypertextlow'">
+                            <div v-else-if="additionalResources[currentIndex][0].url == 't1hypertextlow'">
                                 <img src="../../../../learning_resources/t1.jpg" alt="imagen">
                             </div>
-                            <div v-else-if="additionalResources[currentIndex].url == 't1Analogie_and_relationshiplow'">
+                            <div v-else-if="additionalResources[currentIndex][0].url == 't1Analogie_and_relationshiplow'">
                                 <img src="../../../../learning_resources/t1.jpg" alt="imagen">
                             </div>
-                            <div v-else-if="additionalResources[currentIndex].url == 't1experimentlow'">
+                            <div v-else-if="additionalResources[currentIndex][0].url == 't1experimentlow'">
                                 <img src="../../../../learning_resources/t1.jpg" alt="imagen">
                             </div>
                             <div v-else>
@@ -84,7 +84,7 @@ export default {
         resourceCardStyle() {
             return {
                 width: '100%',
-                display: this.resources.length > 0 ? 'flex' : 'none'
+                display: this.additionalResources.length > 0 ? 'flex' : 'none'
             };
         }
     },

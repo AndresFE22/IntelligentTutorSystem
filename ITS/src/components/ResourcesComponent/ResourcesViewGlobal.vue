@@ -99,8 +99,11 @@ export default {
   },
   mounted() {
     this.axiosCallGlobal();
-    this.initButtonSlider();
+    window.addEventListener('load', this.initButtonSlider);
   },
+  beforeDestroy() {
+  window.removeEventListener('load', this.initButtonSlider);
+},
   methods: {
     axiosCallGlobal() {
       axios.get('/api/Activity')

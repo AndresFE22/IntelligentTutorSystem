@@ -19,41 +19,26 @@
             <p class="subtitle-1 line-spacing">Let's develop your problem-solving skills related to climate change.</p>
           </v-card-text>
           <v-card-actions>
-            <router-link to="/DiagnosisState">
-              <v-btn :disabled="dialog" :loading="dialog" @click="dialog = true" color="#0084ff" large class="bt">
+              <v-btn color="#0084ff" large class="bt" @click="dialog = true">
               <span class="mdi mdi-play-circle"></span> START
             </v-btn>
-            </router-link>
-          
           </v-card-actions>
+          <transition name="fade">
+          <div v-if="dialog" class="login-slider">
+              <into />
+          </div>
+        </transition>
         </v-card>
       </v-layout>
     </v-container>
-<v-dialog
-      v-model="dialog"
-      :scrim="true"
-      persistent
-      width="auto"
-    >
-      <v-card
-        color="primary"
-      >
-        <v-card-text>
-          Please stand by
-          <v-progress-linear
-            indeterminate
-            color="white"
-            class="mb-0"
-          ></v-progress-linear>
-        </v-card-text>
-      </v-card>
-    </v-dialog>
-    
   </div>
 </template>
 
 <script>
 import BackgroundAnimation from "./backgroundAnimation.vue";
+/*import login from "./loginU.vue";*/
+/*import register from "./registerU.vue"*/
+import into from "./IntoU.vue"
 
 export default {
   name: "HomeP",
@@ -64,12 +49,12 @@ export default {
     },
   components: {
     BackgroundAnimation,
+    into
+    /*register*/
   },
   watch: {
       dialog (val) {
         if (!val) return
-
-        setTimeout(() => (this.dialog = false), 4000)
       },
     },  
   methods: {
@@ -163,5 +148,24 @@ img {
   display: flex;
   align-items: center;
   flex-direction: column;;
+}
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.5s;
+}
+.fade-enter, .fade-leave-to {
+  opacity: 0;
+}
+.login-slider {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 132, 255, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
 }
 </style>
