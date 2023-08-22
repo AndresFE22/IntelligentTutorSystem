@@ -458,7 +458,7 @@ export default {
       }
     },
          submitAnswers() {
-          axios.post('/api/diagnosis', { answers : this.answers})
+          axios.post('/api/diagnosisEvaluation', { answers : this.answers})
           .then(response => {
               console.log(response.data);
               this.showSubmitMessage = true;

@@ -5,12 +5,15 @@ import '@mdi/font/css/materialdesignicons.css';
 import Vuetify from 'vuetify';
 import 'vuetify/dist/vuetify.min.css';
 import 'vuetify/dist/vuetify.css';
+import { BootstrapVue, IconsPlugin } from 'bootstrap-vue';
+import 'bootstrap/dist/css/bootstrap.css';
+import 'bootstrap-vue/dist/bootstrap-vue.css';
 import Home from "./components/Home.vue";
 import DiagnosisState from "./components/diagnosisState.vue";
 import DiagnosisStyles from "./components/diagnosisStyles.vue"; 
 import responseStyles from "./components/responseStyles.vue"
-import ActivityGlobal from "./components/ResourcesViewGlobal"
-import ActivitySequential from "./components/ResourcesViewSequential.vue"
+import ActivityGlobal from "./components/ResourcesComponent/ResourcesViewGlobal"
+import ActivitySequential from "./components/ResourcesComponent/ResourcesViewSequential.vue"
 import diagnosisStateEvaluation from "./components/diagnosisStateEvaluation.vue"
 import ActivityITS from "./components/ActivityITS.vue"
 
@@ -21,7 +24,8 @@ Vue.config.productionTip = false;
 
 Vue.use(VueRouter);
 Vue.use(Vuetify);
-
+Vue.use(BootstrapVue)
+Vue.use(IconsPlugin)
 
 const routes = [
   {
@@ -69,7 +73,6 @@ const routes = [
 const router = new VueRouter({
   routes,
 });
-
 const vuetify = new Vuetify();
 
 

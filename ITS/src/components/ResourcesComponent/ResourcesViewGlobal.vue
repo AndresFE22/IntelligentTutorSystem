@@ -14,43 +14,43 @@
             </div>
             <div class="resource-media">
               <div v-if="resources[currentIndex].url === 't1Illustrationlow'">
-                <img src="../learning_resources/t1.jpg" alt="imagen">
+                <img src="../../learning_resources/t1.jpg" alt="imagen">
               </div>
               <div v-else-if="resources[currentIndex].url === 't1demonstrationlow'">
-                <video src="../learning_resources/t1.mp4" controls autoplay></video>
+                <video src="../../learning_resources/t1.mp4" controls autoplay></video>
               </div>
               <div v-else-if="resources[currentIndex].url === 't1objectivelow'">
-                <iframe src="../learning_resources/t1.txt" frameborder="0"></iframe>
+                <iframe src="../../learning_resources/t1.txt" frameborder="0"></iframe>
               </div>
               <div v-else-if="resources[currentIndex].url == 't1graphic_organizerlow'">
-                <img src="../learning_resources/t1.jpg" alt="imagen">
+                <img src="../../learning_resources/t1.jpg" alt="imagen">
               </div>
               <div v-else-if="resources[currentIndex].url == 't1additional_questionlow'">
-                <iframe src="../learning_resources/t1.txt" frameborder="0"></iframe>
+                <iframe src="../../learning_resources/t1.txt" frameborder="0"></iframe>
               </div>
               <div v-else-if="resources[currentIndex].url == 't1simulationslow'">
-                <img src="../learning_resources/t1.jpg" alt="imagen">
+                <img src="../../learning_resources/t1.jpg" alt="imagen">
               </div>
               <div v-else-if="resources[currentIndex].url == 't1questions_and_answerslow'">
-                <img src="../learning_resources/t1.jpg" alt="imagen">
+                <img src="../../learning_resources/t1.jpg" alt="imagen">
               </div>
               <div v-else-if="resources[currentIndex].url == 't1debatelow'">
-                <video src="../learning_resources/t1.mp4"></video>
+                <video src="../../learning_resources/t1.mp4"></video>
               </div>
               <div v-else-if="resources[currentIndex].url == 't1lecturelow'">
-                <iframe src="../learning_resources/t1.txt" frameborder="0"></iframe>
+                <iframe src="../../learning_resources/t1.txt" frameborder="0"></iframe>
               </div>
               <div v-else-if="resources[currentIndex].url == 't1microworldlow'">
-                <img src="../learning_resources/t1.jpg" alt="imagen">
+                <img src="../../learning_resources/t1.jpg" alt="imagen">
               </div>
               <div v-else-if="resources[currentIndex].url == 't1hypertextlow'">
-                <img src="../learning_resources/t1.jpg" alt="imagen">
+                <img src="../../learning_resources/t1.jpg" alt="imagen">
               </div>
               <div v-else-if="resources[currentIndex].url == 't1Analogie_and_relationshiplow'">
-                <img src="../learning_resources/t1.jpg" alt="imagen">
+                <img src="../../learning_resources/t1.jpg" alt="imagen">
               </div>
               <div v-else-if="resources[currentIndex].url == 't1experimentlow'">
-                <img src="../learning_resources/t1.jpg" alt="imagen">
+                <img src="../../learning_resources/t1.jpg" alt="imagen">
               </div>
               <div v-else>
                 <p>No se puede mostrar el recurso.</p>
@@ -70,6 +70,7 @@
           </div>
         </div>
       </div>
+      
     </div>
   </div>
 </template>
@@ -81,6 +82,7 @@ export default {
   data() {
     return {
       resources: [],
+      additionalResources: [],
       currentIndex: 0,
       isDragging: false,
       startX: 0,
@@ -103,7 +105,11 @@ export default {
     axiosCallGlobal() {
       axios.get('/api/Activity')
         .then(response => {
-          this.resources = response.data.data_global;
+          this.resources = response.data.resource_list;
+          this.additionalResources_1 = response.data.resource_list_additional_1
+          this.additionalResources_2 = response.data.resource_list_additional_2
+
+          
         })
         .catch(error => {
           console.log(error, 'Error al capturar');

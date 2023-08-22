@@ -7,8 +7,8 @@ from werkzeug.datastructures import ImmutableMultiDict
 
 app = Flask(__name__,
             static_folder='../ITS/src/learning_resources/',
-            static_url_path = '/static'
-)
+            static_url_path='/static'
+            )
 app.secret_key = 'your_secret_key'
 CORS(app)
 
@@ -16,15 +16,18 @@ CORS(app)
 # Crea una instancia
 learning_goals = LearningGoals()
 
+
 @cross_origin
 @app.route('/')
 def init():
     return 'servidor esuchando'
 
+
 @cross_origin
 @app.route('/diagnosisrender')
 def diagnosisState():
     return render_template('diagnosisState.html')
+
 
 @cross_origin
 @app.route('/diagnosis', methods=['POST'])
@@ -65,7 +68,7 @@ def diagnosis_lowlvl():
     print('data', data)
     answers = data.get('answers', [])
     print('answers', answers)
-    
+
     for i, student_answer in enumerate(answers, start=1):
         question = questions[i - 1]
         activity_name = question['activity_name']
@@ -73,7 +76,7 @@ def diagnosis_lowlvl():
         if student_answer == question["correct_answer"]:
             print("Student Answer:", student_answer)
             print("Correct Answer for", activity_name)
-            learning_goals.mark_activity_completed(activity_name)  
+            learning_goals.mark_activity_completed(activity_name)
         else:
             print("Incorrect Answer for", activity_name)
             incorrect_activities[activity_name] = student_answer
@@ -81,14 +84,15 @@ def diagnosis_lowlvl():
     for activity_name, answer in incorrect_activities.items():
         incorrect_answer.append(activity_name)
 
-    print(incorrect_answer)   
-        
+    print(incorrect_answer)
+
     response = learning_goals.print_learning_goals()
     recommended_path = learning_goals.recommend_learning_path()
-    
+
     session['recommended_path'] = recommended_path
     session['incorrect_activities'] = incorrect_answer
     return jsonify(response, recommended_path, 'Done!')
+
 
 @app.route('/diagnosisEvaluation', methods=['POST'])
 def diagnosisEvaluation():
@@ -128,7 +132,7 @@ def diagnosisEvaluation():
     print('data', data)
     answers = data.get('answers', [])
     print('answers', answers)
-    
+
     for i, student_answer in enumerate(answers, start=1):
         question = questions[i - 1]
         activity_name = question['activity_name']
@@ -136,7 +140,7 @@ def diagnosisEvaluation():
         if student_answer == question["correct_answer"]:
             print("Student Answer:", student_answer)
             print("Correct Answer for", activity_name)
-            learning_goals.mark_activity_completed(activity_name)  
+            learning_goals.mark_activity_completed(activity_name)
         else:
             print("Incorrect Answer for", activity_name)
             incorrect_activities[activity_name] = student_answer
@@ -144,15 +148,15 @@ def diagnosisEvaluation():
     for activity_name, answer in incorrect_activities.items():
         incorrect_answer.append(activity_name)
 
-    print(incorrect_answer)   
-        
+    print(incorrect_answer)
+
     response = learning_goals.print_learning_goals()
     recommended_path = learning_goals.recommend_learning_path()
-    
+
     session['recommended_path'] = recommended_path
     session['incorrect_activities'] = incorrect_answer
-    return jsonify(response, recommended_path, 'Done!')
-    
+    return jsonify('Done!', response )
+
 @cross_origin
 @app.route('/test', methods=['POST', 'GET'])
 def testStyles():
@@ -167,7 +171,7 @@ def testStyles():
             answers.append((question_key, answer))
 
     print("answers", answers)
-    
+
     # Crear el ImmutableMultiDict
     immutable_answers = ImmutableMultiDict(answers)
 
@@ -177,27 +181,30 @@ def testStyles():
         'Visual/Verbal': [3, 7, 11, 15, 19],
         'Secuencial/Global': [4, 8, 12, 16, 20]
     }
-    
+
     selected_styles = {}
-    
-    for ask, response in immutable_answers.items():  # Usar immutable_answers
+
+    for ask, response in immutable_answers.items():
         ask_num = int(ask.lstrip('pregunta'))
         for style, asks in learning_styles.items():
             if ask_num in asks:
-                selected_styles[ask_num] = {'style': style, 'response': response}
+                selected_styles[ask_num] = {
+                    'style': style, 'response': response}
                 break
-                
+
     print(selected_styles)
-    
+
     results = learning_goals.calculate_learning_style_score(selected_styles)
     print(results)
 
     for result in results:
-        print(f"Estilo: {result['dominant_style']}, Resta: {result['subtraction']}")
+        print(
+            f"Estilo: {result['dominant_style']}, Resta: {result['subtraction']}")
 
     session['results'] = results
-    
+
     return jsonify('styles Done', results)
+
 
 @cross_origin
 @app.route('/StylesResults', methods=['GET'])
@@ -205,7 +212,6 @@ def resultsStyles():
     results = session.get('results')
     print(results)
 
-    
     style_dict = {}
     for item in results:
         style = item['dominant_style']
@@ -215,10 +221,12 @@ def resultsStyles():
         else:
             style_dict[style] = [subtraction]
 
-    result_str = ', '.join([f'{style}: {", ".join(map(str, subtractions))}' for style, subtractions in style_dict.items()])
+    result_str = ', '.join(
+        [f'{style}: {", ".join(map(str, subtractions))}' for style, subtractions in style_dict.items()])
 
     print(result_str)
     return jsonify(result_str)
+
 
 @cross_origin
 @app.route('/Activity', methods=['GET', 'POST'])
@@ -228,12 +236,9 @@ def activity():
     style_list_n = session.get('results')
     last_item = style_list_n.pop()
     style_list = style_list_n
-    #nav_menu = last_item['dominant_style']
+    # nav_menu = last_item['dominant_style']
     nav_menu = 'Secuencial'
     #nav_menu = 'Global'
-
-
-
 
     combined_styles = []
     for entry in style_list:
@@ -241,12 +246,13 @@ def activity():
         style = entry['style']
         combined_style = f"{style}: {dominant_style}"
         combined_styles.append(combined_style)
-        
+
     print("style", style_list, "nav", nav_menu, "combined", combined_styles)
 
     Learning_Resource = LearningResource('localhost', 'root', '', 'climate')
-    
-    resource_list = Learning_Resource.find_resource(recommended_path, combined_styles)
+
+    resource_list = Learning_Resource.find_resource(
+        recommended_path, combined_styles)
     print("list", resource_list)
 
     for resource in resource_list:
@@ -257,19 +263,51 @@ def activity():
         print("PT:", resource["pt"])
         print("LC:", resource["lc"])
 
-    Learning_Resource.close_connection()
+    filtered_resource = {}
+    additionalResources_1 = {}
+    additionalResources_2 = {}
 
+
+# Este ciclo es para separar la primera táctica pedagógica de las demás
+    for resource in resource_list:
+        activity = resource['name']
+        pt = resource['pt']
+    
+        if activity not in filtered_resource:
+            filtered_resource[activity] = resource
+        elif activity not in additionalResources_1:
+            additionalResources_1[activity] = resource
+        else:
+            additionalResources_2.setdefault(activity, []).append(resource)
+    
+    filtered_resource_list = list(filtered_resource.values())
+    additional_pt_resources_1 = list(additionalResources_1.values())
+    additional_pt_resources_2 = list(additionalResources_2.values())
+
+
+    for resource in filtered_resource_list:
+        print("Activity:", resource["name"])
+        print("Goal:", resource["goal"])
+        print("Level:", resource["lvl"])
+        print("URL:", resource["url"])
+        print("PT:", resource["pt"])
+        print("LC:", resource["lc"])
+        print("-----")
+
+    Learning_Resource.close_connection()
+    print('resource ', filtered_resource_list)
+    print('Additional1', additional_pt_resources_1)
+    print('Additional2', additional_pt_resources_2)
     print('incorrect_activities', incorrect_activities)
 
-    
-    print("icorrect:", incorrect_activities)
-    
-    data_incorrect_answer = [int(item[1:]) for item in incorrect_activities if item.startswith('t') and item[1:].isdigit()]
+    data_incorrect_answer = [int(item[1:]) for item in incorrect_activities if item.startswith(
+        't') and item[1:].isdigit()]
 
     return jsonify({
         'nav_menu': nav_menu,
-        'data_sequential': resource_list,
-        'data_global': resource_list,
+        'resource_list': filtered_resource_list,
+        'resource_list_additional_1': additional_pt_resources_1,
+        'resource_list_additional_2': additional_pt_resources_2,
         'data_incorrect_answer': data_incorrect_answer
     })
 
