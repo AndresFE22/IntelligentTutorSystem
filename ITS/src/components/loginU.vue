@@ -31,7 +31,7 @@ export default {
   methods: {
     login() {
       axios.post('/api/login', {
-        username: this.user,
+        user: this.user,
         password: this.password
       })
       .then(response => {

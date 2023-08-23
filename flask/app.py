@@ -22,7 +22,10 @@ try:
         host='localhost',
         user='root',
         password='',
-        database='climate'
+        database='its',
+        autocommit= True,
+        raise_on_warnings= True,
+        use_pure= False        
     )
     print("conectada exitosamente")
 except mysql.connector.Error as err:
@@ -49,7 +52,8 @@ def register():
     data = request.get_json()
     hashed_password = bcrypt.generate_password_hash(data['password']).decode('utf-8')
     cursor = connection.cursor()
-    query = "INSERT INTO student (name, user, password) VALUES (%s, %s, %s)"
+    query = "INSERT INTO student (name, password, user) VALUES (%s, %s, %s)"
+    print(data['name'], data['user'], hashed_password)
     cursor.execute(query, (data['name'], data['user'], hashed_password))
     connection.commit
     cursor.close()
@@ -59,6 +63,7 @@ def register():
 @cross_origin
 @app.route('/login', methods=['POST'])
 def login():
+    connection.reconnect()
     data = request.get_json()
     cursor = connection.cursor(dictionary=True)
     query = "SELECT * FROM student WHERE user = %s"
@@ -294,7 +299,7 @@ def activity():
 
     print("style", style_list, "nav", nav_menu, "combined", combined_styles)
 
-    Learning_Resource = LearningResource('localhost', 'root', '', 'climate')
+    Learning_Resource = LearningResource('localhost', 'root', '', 'its')
 
     resource_list = Learning_Resource.find_resource(
         recommended_path, combined_styles)
