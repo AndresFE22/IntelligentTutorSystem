@@ -10,6 +10,7 @@
         </div>
         <input type="button" class="toggle-button" @click="toggleMode" :value="isLogin ? 'Registrarse aquí' : 'Iniciar sesión aquí'" />
       </div>
+      
     </v-card-text>
   </v-card>
 </template>
@@ -30,7 +31,7 @@ export default {
   },
   methods: {
     toggleMode() {
-      this.isLogin = !this.isLogin; // Alternar entre inicio de sesión y registro
+      this.isLogin = !this.isLogin;
     },
   },
 };

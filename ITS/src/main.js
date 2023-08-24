@@ -19,9 +19,6 @@ import ActivitySequential from "./components/ResourcesComponent/ResourcesViewSeq
 import diagnosisStateEvaluation from "./components/diagnosisStateEvaluation.vue"
 import ActivityITS from "./components/ActivityITS.vue"
 
-
-
-
 Vue.config.productionTip = false;
 
 Vue.use(VueRouter);
@@ -49,36 +46,43 @@ const routes = [
     path: "/DiagnosisState",
     name: "DiagnosisState",
     component: DiagnosisState,
+    meta: { requiresAuth: true }
   },
   {
     path: "/DiagnosisStyles",
     name: "DiagnosisStyles",
     component: DiagnosisStyles,
+    meta: { requiresAuth: true }    
   },
   {
     path: "/ResponseStyles",
     name: "ResponseStyles",
-    component: responseStyles
+    component: responseStyles,
+    meta: { requiresAuth: true }
   },
   {
     path: "/ActivityGlobal",
     name: "ActivityGlobal",
-    component: ActivityGlobal
+    component: ActivityGlobal,
+    meta: { requiresAuth: true }
   },
   {
     path: "/ActivitySequential",
     name: "ActivitySequential",
-    component: ActivitySequential
+    component: ActivitySequential,
+    meta: { requiresAuth: true }
   },
   {
     path: "/diagnosisStateEvaluation",
     name: "diagnosisStateEvaluation",
-    component: diagnosisStateEvaluation
+    component: diagnosisStateEvaluation,
+    meta: { requiresAuth: true }
   },
   {
     path: "/ActivityITS",
     name: "ActivityITS",
-    component: ActivityITS
+    component: ActivityITS,
+    meta: { requiresAuth: true }
   }
 ];
 
@@ -87,6 +91,30 @@ const router = new VueRouter({
   routes,
 });
 const vuetify = new Vuetify();
+
+import axios from 'axios'
+router.beforeEach(async (to, from, next) => {
+  if (to.matched.some(record => record.meta.requiresAuth)) {
+    try {
+      console.log('Before axios.get');
+      const response = await axios.get('api/check-auth'); // Cambia la ruta según tu implementación
+      console.log('After axios.get', response.data);
+      if (response.data.isAuthenticated) {
+        console.log('User is authenticated');
+        next({ name: 'DiagnosisState' });
+      } else {
+        console.log('User is not authenticated');
+        next({ name: 'Home' });
+      }
+    } catch (error) {
+      console.error('Error while checking authentication:', error);
+      next({ name: 'Home' }); 
+    }
+  } else {
+    console.log('Route does not require authentication');
+    next();
+  }
+});
 
 
 new Vue({

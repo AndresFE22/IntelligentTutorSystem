@@ -1,17 +1,17 @@
 <template>
   <div class="login-container">
     <div class="login-card">
-      <h1 class="login-title">Iniciar sesión</h1>
+      <h1 class="login-title">log in</h1>
       <form class="login-form">
         <div class="form-group">
-          <label for="username">Usuario</label>
-          <input v-model="user" id="username" class="form-control" placeholder="Ingrese su usuario" />
+          <label for="username">user</label>
+          <input v-model="user" id="username" class="form-control" placeholder="Enter your username" />
         </div>
         <div class="form-group">
-          <label for="password">Contraseña</label>
-          <input v-model="password" id="password" class="form-control" type="password" placeholder="Ingrese su contraseña" />
+          <label for="password">password</label>
+          <input v-model="password" id="password" class="form-control" type="password" placeholder="Enter your password" />
         </div>
-        <button @click="login" class="login-button">Iniciar sesión</button>
+        <button @click="login" class="login-button">log in</button>
       </form>
     </div>
   </div>
@@ -40,8 +40,18 @@ export default {
       .catch(error => {
         console.error(error);
       });
-    }
+    },
+    verificar() {
+    axios
+    .get('api/check-auth')
+    .then(response => {
+      console.log(response.data.isAuthenticated)
+    })
+    .catch(error => {
+      console.error('Error while checking authentication:', error);
+    });
   }
+  },
 };
 </script>
 

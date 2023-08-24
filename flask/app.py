@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, jsonify, session
-from its import IntelligentTutor, LearningGoals, LearningResource
+from its import IntelligentTutor, LearningGoals, LearningResource, authenticated
 import json
 from flask_cors import CORS, cross_origin
 from werkzeug.datastructures import ImmutableMultiDict
@@ -23,9 +23,7 @@ try:
         user='root',
         password='',
         database='its',
-        autocommit= True,
-        raise_on_warnings= True,
-        use_pure= False        
+        autocommit= True,        
     )
     print("conectada exitosamente")
 except mysql.connector.Error as err:
@@ -38,6 +36,7 @@ except mysql.connector.Error as err:
 
 
 learning_goals = LearningGoals()
+is_authenticated = authenticated()
 
 
 @cross_origin
@@ -45,16 +44,33 @@ learning_goals = LearningGoals()
 def init():
     return 'servidor esuchando'
 
+@cross_origin
+@app.route('/check-auth', methods=['GET'])
+def check_auth():
+    token = request.headers.get('Authorization')  # Obtener el token de autenticación del encabezado
+    is_auth = is_authenticated.is_authenticated(token)
+    print(is_auth)
+    return jsonify({'isAuthenticated': is_auth})
+
 
 @cross_origin
 @app.route('/register', methods=['POST'])
 def register():
     data = request.get_json()
-    hashed_password = bcrypt.generate_password_hash(data['password']).decode('utf-8')
     cursor = connection.cursor()
+
+    check_query = "SELECT user FROM student WHERE user = %s"
+    cursor.execute(check_query, (data['user'],))
+    existing_user = cursor.fetchone()
+
+    if existing_user:
+        cursor.close()
+        return jsonify({'message': 'The user is already registered'})
+
+    hashed_password = bcrypt.generate_password_hash(data['password']).decode('utf-8')
     query = "INSERT INTO student (name, password, user) VALUES (%s, %s, %s)"
-    print(data['name'], data['user'], hashed_password)
-    cursor.execute(query, (data['name'], data['user'], hashed_password))
+    print(data['name'], hashed_password, data['user'])
+    cursor.execute(query, (data['name'], hashed_password, data['user'],))
     connection.commit
     cursor.close()
     return jsonify({'message': 'User registered successfully'})

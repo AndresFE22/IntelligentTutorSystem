@@ -1,4 +1,6 @@
 import mysql.connector
+from mysql.connector import connect, Error
+
 
 class IntelligentTutor:
     def __init__(self):
@@ -279,7 +281,27 @@ class LearningResource:
         self.cursor.close()
         self.connection.close()
 
-
+class authenticated:
+    def __init__(self) -> None:
+        pass
+        
+    def is_authenticated(self, username):
+        try:
+            with connect(
+                host="localhost",
+                user="root",
+                password="",
+                database="its"
+            ) as connection:
+                cursor = connection.cursor()
+                query = "SELECT * FROM student WHERE user = %s"
+                cursor.execute(query, (username,))
+                user = cursor.fetchone()
+                return user is not None
+        except Error as e:
+            print("Error:", e)
+            return False
+      
         
         
 
