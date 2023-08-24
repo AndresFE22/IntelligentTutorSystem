@@ -36,11 +36,14 @@ export default {
       })
       .then(response => {
         console.log(response.data.message);
+        if (response.data.message === 'Login successful') {
+          this.$store.dispatch('loginSuccess');        }
       })
       .catch(error => {
         console.error(error);
       });
     },
+  
     verificar() {
     axios
     .get('api/check-auth')

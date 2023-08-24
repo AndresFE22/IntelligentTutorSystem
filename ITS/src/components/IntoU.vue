@@ -60,7 +60,7 @@ export default {
 
 .content-container {
   width: 100%;
-  overflow: hidden; /* Asegura que el contenido no se desborde */
+  overflow: hidden;
 }
 
 .auth-card v-form {

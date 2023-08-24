@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import App from './App.vue';
 import VueRouter from 'vue-router';
+import store from './store'
 import '@mdi/font/css/materialdesignicons.css';
 import Vuetify from 'vuetify';
 import 'vuetify/dist/vuetify.min.css';
@@ -92,33 +93,19 @@ const router = new VueRouter({
 });
 const vuetify = new Vuetify();
 
-import axios from 'axios'
-router.beforeEach(async (to, from, next) => {
-  if (to.matched.some(record => record.meta.requiresAuth)) {
-    try {
-      console.log('Before axios.get');
-      const response = await axios.get('api/check-auth'); // Cambia la ruta según tu implementación
-      console.log('After axios.get', response.data);
-      if (response.data.isAuthenticated) {
-        console.log('User is authenticated');
-        next({ name: 'DiagnosisState' });
-      } else {
-        console.log('User is not authenticated');
-        next({ name: 'Home' });
-      }
-    } catch (error) {
-      console.error('Error while checking authentication:', error);
-      next({ name: 'Home' }); 
-    }
+const app = new Vue({
+  router,
+  vuetify,
+  store,
+  render: h => h(App),
+}).$mount('#app');
+
+router.beforeEach((to, from, next) => {
+  if (to.matched.some(record => record.meta.requiresAuth) && !app.$store.state.isAuthenticated) {
+    console.log('User is not authenticated');
+    next({ name: 'Home' });
   } else {
-    console.log('Route does not require authentication');
+    console.log('User is authenticated');
     next();
   }
 });
-
-
-new Vue({
-  router,
-  vuetify,
-  render: h => h(App),
-}).$mount('#app');

@@ -45,15 +45,6 @@ def init():
     return 'servidor esuchando'
 
 @cross_origin
-@app.route('/check-auth', methods=['GET'])
-def check_auth():
-    token = request.headers.get('Authorization')  # Obtener el token de autenticación del encabezado
-    is_auth = is_authenticated.is_authenticated(token)
-    print(is_auth)
-    return jsonify({'isAuthenticated': is_auth})
-
-
-@cross_origin
 @app.route('/register', methods=['POST'])
 def register():
     data = request.get_json()
@@ -61,7 +52,7 @@ def register():
 
     check_query = "SELECT user FROM student WHERE user = %s"
     cursor.execute(check_query, (data['user'],))
-    existing_user = cursor.fetchone()
+    existing_user = cursor.fetchone()   
 
     if existing_user:
         cursor.close()
@@ -85,14 +76,22 @@ def login():
     query = "SELECT * FROM student WHERE user = %s"
     cursor.execute(query, (data['user'],))
     user = cursor.fetchone()
+    print(user)
     cursor.close()
+    session['user'] = user
     if user and bcrypt.check_password_hash(user['password'], data['password']):
         return jsonify({'message': 'Login successful'})
     else:
-        return jsonify({'message': 'Login failed'})
+        return jsonify({'message': 'Login failed', 'is_authenticated': False})
 
-
-
+@cross_origin
+@app.route('/check-auth', methods=['GET'])
+def check_auth():
+    user = session.get('user')
+    print(user)
+    is_auth = is_authenticated.is_authenticated(user)
+    print(is_auth)
+    return jsonify({'isAuthenticated': is_auth})
 
 
 @cross_origin
