@@ -10,12 +10,6 @@
 <script>
 
 export default {
-  data() {
-    return {
-      session: false
-    }
-  },
-
   methods: {
     isActive(route) {
       return this.$route.path === route;

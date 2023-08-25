@@ -78,21 +78,10 @@ def login():
     user = cursor.fetchone()
     print(user)
     cursor.close()
-    session['user'] = user
     if user and bcrypt.check_password_hash(user['password'], data['password']):
         return jsonify({'message': 'Login successful'})
     else:
-        return jsonify({'message': 'Login failed', 'is_authenticated': False})
-
-@cross_origin
-@app.route('/check-auth', methods=['GET'])
-def check_auth():
-    user = session.get('user')
-    print(user)
-    is_auth = is_authenticated.is_authenticated(user)
-    print(is_auth)
-    return jsonify({'isAuthenticated': is_auth})
-
+        return jsonify({'message': 'Login failed'})
 
 @cross_origin
 @app.route('/diagnosis', methods=['POST'])

@@ -11,7 +11,7 @@
           <label for="password">password</label>
           <input v-model="password" id="password" class="form-control" type="password" placeholder="Enter your password" />
         </div>
-        <button @click="login" class="login-button">log in</button>
+        <button @click="onSubmit" class="login-button">log in</button>
       </form>
     </div>
   </div>
@@ -29,33 +29,24 @@ export default {
     };
   },
   methods: {
-    login() {
-      axios.post('/api/login', {
+  async onSubmit() {
+    try {
+      const response = await axios.post('/api/login', {
         user: this.user,
         password: this.password
-      })
-      .then(response => {
-        console.log(response.data.message);
-        if (response.data.message === 'Login successful') {
-          this.$store.dispatch('loginSuccess');        }
-      })
-      .catch(error => {
-        console.error(error);
       });
-    },
-  
-    verificar() {
-    axios
-    .get('api/check-auth')
-    .then(response => {
-      console.log(response.data.isAuthenticated)
-    })
-    .catch(error => {
-      console.error('Error while checking authentication:', error);
-    });
+
+      console.log(response.data.message);
+      if (response.data.message === 'Login successful') {
+        await this.$store.dispatch('doLogin', this.user);
+        this.$router.push({ name: 'DiagnosisState' });
+      }
+    } catch (error) {
+      console.error(error);
+    }
   }
-  },
-};
+},
+}
 </script>
 
 <style scoped>

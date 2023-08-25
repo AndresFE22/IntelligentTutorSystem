@@ -1,20 +1,29 @@
-import Vue from 'vue';
-import Vuex from 'vuex';
+import Vue from "vue";
+import Vuex from "vuex";
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    isAuthenticated: false
+    username: null,
+    auth: false
   },
   mutations: {
-    setAuthentication(state, isAuthenticated) {
-      state.isAuthenticated = isAuthenticated;
+    doLogin(state, username) {
+      state.auth = true;
+      state.username = username;
+    },
+    doLogout(state) {
+      state.auth = false;
+      state.username = null;
     }
   },
   actions: {
-    loginSuccess({ commit }) {
-      commit('setAuthentication', true);
+    doLogin({ commit }, username) {
+      commit("doLogin", username);
+    },
+    doLogout({ commit }) {
+      commit("doLogout");
     }
-  }
+  },
 });

@@ -91,21 +91,27 @@ const router = new VueRouter({
   mode: 'history',
   routes,
 });
+
+router.beforeEach((to, from, next) => {
+  if (to.matched.some((record) => record.meta.requiresAuth)) {
+    if (store.state.auth) {
+      next();
+    } else {
+      next({ name: "Login" });
+    }
+  } else {
+    next();
+  }
+});
+
+
 const vuetify = new Vuetify();
 
-const app = new Vue({
+new Vue({
   router,
   vuetify,
   store,
   render: h => h(App),
 }).$mount('#app');
 
-router.beforeEach((to, from, next) => {
-  if (to.matched.some(record => record.meta.requiresAuth) && !app.$store.state.isAuthenticated) {
-    console.log('User is not authenticated');
-    next({ name: 'Home' });
-  } else {
-    console.log('User is authenticated');
-    next();
-  }
-});
+
