@@ -50,9 +50,12 @@
       <div id="diagnosisStateEvaluation" v-show="activeTab === 'evaluationTab'">
         <diagnosis-state-evaluation v-if="activeTab === 'evaluationTab'" />
       </div>
-      <div class="profile-sidebar">
-        <Profile :userId="userId" />
-      </div>
+      <b-button variant="primary" class="mobile-toggle-button" @click="toggleProfileSidebar">
+      <i class="fas fa-bars"></i>
+    </b-button>
+      <b-collapse id="profileCollapse" class="profile-sidebar" :visible="isProfileSidebarOpen">
+      <Profile :userId="userId" />
+    </b-collapse>
     </div>
   </template>
   
@@ -67,6 +70,8 @@
   import ResourceAdditionalG_2 from './ResourcesComponent/AdditionalResources/AdditionalRglobal/additionalResourceG_2.vue'
   import DiagnosisStateEvaluation from './diagnosisStateEvaluation.vue';
   import axios from 'axios';
+  import { BCollapse } from 'bootstrap-vue';
+
   /*import { BPopover } from 'bootstrap-vue';
 */
   
@@ -79,7 +84,8 @@
       ResourceAdditionalG_2,
       ResourceAdditionalS_1,
       ResourceAdditionalS_2,
-      Profile
+      Profile,
+      BCollapse
       /**/
     },
     data() {
@@ -87,7 +93,8 @@
         nav_menu: '', 
         activeTab: '', 
         additionalResource_1: [],
-        additionalResource_2: []
+        additionalResource_2: [],
+        isProfileSidebarOpen: false
 
       };
     },
@@ -108,6 +115,9 @@
       changeTab(tab) {
         this.activeTab = tab;
       },
+      toggleProfileSidebar() {
+      this.isProfileSidebarOpen = !this.isProfileSidebarOpen;
+    }
     },
   };
   </script>
@@ -145,6 +155,20 @@
   left: 0;
   overflow-y: auto; 
   box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
+}
+
+.mobile-toggle-button {
+  display: none; 
+}
+
+@media (max-width: 850px) {
+  .mobile-toggle-button {
+    display: block; 
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 1000;
+  }
 }
   </style>
   

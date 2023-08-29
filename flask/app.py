@@ -242,7 +242,7 @@ def testStyles():
         'Visual/Verbal': [3, 7, 11, 15, 19],
         'Secuencial/Global': [4, 8, 12, 16, 20]
     }
-
+    
     selected_styles = {}
 
     for ask, response in immutable_answers.items():
