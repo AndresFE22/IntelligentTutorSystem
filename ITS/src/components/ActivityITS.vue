@@ -50,11 +50,15 @@
       <div id="diagnosisStateEvaluation" v-show="activeTab === 'evaluationTab'">
         <diagnosis-state-evaluation v-if="activeTab === 'evaluationTab'" />
       </div>
+      <div class="profile-sidebar">
+        <Profile :userId="userId" />
+      </div>
     </div>
   </template>
   
   <script>
   
+  import Profile from './ProfileUser.vue'
   import ResourcesViewsGlobal from './ResourcesComponent/ResourcesViewGlobal.vue';
   import ResourcesViewsSequential from './ResourcesComponent/ResourcesViewSequential.vue';
   import ResourceAdditionalS_1 from './ResourcesComponent/AdditionalResources/AdditionalRsequential/additionalResourceS_1.vue'
@@ -75,6 +79,7 @@
       ResourceAdditionalG_2,
       ResourceAdditionalS_1,
       ResourceAdditionalS_2,
+      Profile
       /**/
     },
     data() {
@@ -130,6 +135,16 @@
    
 }
 
-
+.profile-sidebar {
+  width: 300px; 
+  background-color: #f0f0f0; 
+  padding: 20px; 
+  position: fixed; 
+  top: 0;
+  bottom: 0;
+  left: 0;
+  overflow-y: auto; 
+  box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
+}
   </style>
   

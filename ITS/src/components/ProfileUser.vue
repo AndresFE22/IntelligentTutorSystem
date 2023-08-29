@@ -1,38 +1,48 @@
 <template>
-    <div class="profile">
-      <h2>Mi Perfil</h2>
-      <div class="profile-info">
-        <p><strong>Name:</strong> {{ user.name }}</p>
-        <p><strong>User:</strong> {{ user.user }}</p>
-        <p><strong>Learning Styles:</strong> {{ user.Learning_styles }}</p>
-      </div>
+  <div class="profile">
+    <h2>Mi Perfil</h2>
+    <div class="profile-info">
+      <img v-if="user.picture" :src="getImageUrl(user.picture, user.format)" :alt="palabra.palabra" class="imagen">
+      <p><strong>ID:</strong> {{ user.Id }}</p>
+      <p><strong>Name:</strong> {{ user.name }}</p>
+      <p><strong>User:</strong> {{ user.users }}</p>
+      <p><strong>Password:</strong> {{ user.password }}</p>
+      <p><strong>Learning Style:</strong> {{ user.Ls }}</p>
     </div>
-  </template>
-  
-  <script>
-import axios from 'axios';
+  </div>
+</template>
 
-  export default {
-    data() { 
-      return {
-        user: {}
-      }
-    }, 
-    methods: {
-      dataUser() {
-        axios.get('api/dataUser')
-        .then(response => {
-          console.log(response.data)
-          this.user = response.data
-        } )
-        .catch(error => {
-          console.log('error al capturar', error)
-        })
-      }
+<script>
+import axios from 'axios';
+import { mapState } from 'vuex';
+
+export default {
+  computed: {
+    ...mapState(['auth']),
+    userId() {
+      return this.$store.state.userId
+    }
+  },
+  data() {
+    return {
+      user: []
+    };
+  },
+  async mounted() {
+    try {
+      const response = await axios.get(`/api/dataUser/${this.userId}`);
+      this.user = response.data
+    } catch (error) {
+      console.error(error);
+    }
+  },
+  methods: {
+    getImageUrl(imagenBase64, format) {
+      return `data:image/${format};base64,${imagenBase64}`;
     }
   }
-  </script>
-  
-  <style scoped>
-  </style>
-  
+}
+</script>
+
+<style scoped>
+</style>

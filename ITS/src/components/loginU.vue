@@ -35,6 +35,7 @@ export default {
   ...mapState(['auth'])
 },
 
+
   methods: {
   async onSubmit() {
     try {
@@ -44,8 +45,12 @@ export default {
       });
 
       console.log(response.data.message);
+      console.log(response.data.user.id);
       if (response.data.message === 'Login successful') {
         localStorage.setItem('isLoggedIn', 'true')
+        const userId = response.data.user.id
+        this.$store.commit('setUserId', userId)
+        localStorage.setItem('userId', userId)
         await this.$store.dispatch('doLogin', this.user);
         this.$router.push({ name: 'DiagnosisState' });
       }

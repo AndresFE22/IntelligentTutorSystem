@@ -1,9 +1,10 @@
 <template>
   <div class="register-container">
     <div class="register-card">
-      <h1 class="register-title">Regiser</h1>
+      <h1 class="register-title">Register</h1>
       <form class="register-form">
         <div class="form-group">
+          <v-file-input v-model="picture" label="Agregue una foto" accept="image/*" required></v-file-input>
           <label for="name">full name</label>
           <input v-model="name" id="name" class="form-control" placeholder="Enter your fullname" />
         </div>
@@ -50,15 +51,18 @@ export default {
       password: '',
       message: '',
       error: '',
+      picture: null
     };
   },
   methods: {
     register() {
-      axios.post('api/register', {
-        name: this.name,
-        user: this.user,
-        password: this.password
-      })
+      const formData = new FormData();
+      formData.append('name', this.name)
+      formData.append('user', this.user) 
+      formData.append('password', this.password) 
+      formData.append('picture', this.picture) 
+
+      axios.post('api/register', formData)
       .then(response => {
         this.message = response.data.message;
         setTimeout(() => {
@@ -69,6 +73,7 @@ export default {
           this.name= "",
           this.user="",
           this.password=""
+          this.picture=null
         }
         console.log(response.data.message);
       })

@@ -122,6 +122,7 @@ button {
 
 import axios from 'axios';
 axios.defaults.headers.common['Access-Control-Allow-Origin'] = '*'; 
+import { mapState } from 'vuex';
 
   export default {
     data() {
@@ -297,6 +298,9 @@ axios.defaults.headers.common['Access-Control-Allow-Origin'] = '*';
         answers: []
       };
     },
+    computed: {
+  ...mapState(['auth'])
+},
     methods: {
         startQuiz() {
       this.quizStarted = true;

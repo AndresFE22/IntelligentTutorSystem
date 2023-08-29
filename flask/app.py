@@ -7,6 +7,8 @@ from mysql.connector import errorcode
 from flask_bcrypt import Bcrypt
 import os
 import mysql.connector
+import base64
+import imghdr
 
 
 app = Flask(__name__,
@@ -47,21 +49,26 @@ def init():
 @cross_origin
 @app.route('/register', methods=['POST'])
 def register():
-    data = request.get_json()
+    name = request.form.get('name')
+    user = request.form.get('user')
+    password = request.form.get('password')
+    picture = request.files['picture']
+    pictureData = picture.read()
+
     cursor = connection.cursor()
 
     check_query = "SELECT user FROM student WHERE user = %s"
-    cursor.execute(check_query, (data['user'],))
+    cursor.execute(check_query, (user,))
     existing_user = cursor.fetchone()   
 
     if existing_user:
         cursor.close()
         return jsonify({'message': 'The user is already registered'})
 
-    hashed_password = bcrypt.generate_password_hash(data['password']).decode('utf-8')
-    query = "INSERT INTO student (name, password, user) VALUES (%s, %s, %s)"
-    print(data['name'], hashed_password, data['user'])
-    cursor.execute(query, (data['name'], hashed_password, data['user'],))
+    hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+    query = "INSERT INTO student (name, picture, password, user) VALUES (%s, %s, %s, %s)"
+    print(name, hashed_password, user)
+    cursor.execute(query, (name, pictureData, hashed_password, user,))
     connection.commit
     cursor.close()
     return jsonify({'message': 'User registered successfully'})
@@ -79,7 +86,7 @@ def login():
     print(user)
     cursor.close()
     if user and bcrypt.check_password_hash(user['password'], data['password']):
-        return jsonify({'message': 'Login successful'})
+        return jsonify({'message': 'Login successful', 'user': {'id': user['id']}})
     else:
         return jsonify({'message': 'Login failed'})
 
@@ -260,27 +267,6 @@ def testStyles():
     return jsonify('styles Done', results)
 
 
-@cross_origin
-@app.route('/StylesResults', methods=['GET'])
-def resultsStyles():
-    results = session.get('results')
-    print(results)
-
-    style_dict = {}
-    for item in results:
-        style = item['dominant_style']
-        subtraction = item['subtraction']
-        if style in style_dict:
-            style_dict[style].append(subtraction)
-        else:
-            style_dict[style] = [subtraction]
-
-    result_str = ', '.join(
-        [f'{style}: {", ".join(map(str, subtractions))}' for style, subtractions in style_dict.items()])
-
-    print(result_str)
-    return jsonify(result_str)
-
 
 @cross_origin
 @app.route('/Activity', methods=['GET', 'POST'])
@@ -366,20 +352,31 @@ def activity():
     })
 
 @cross_origin
-@app.route('/dataUser', methods=['GET'])
-def resultsStyles():
+@app.route('/dataUser/<int:id>', methods=['GET'])
+def dataUser(id):
     connection.reconnect()
-    userID = request.get_json()
-    cursor = connection.cursor(dictionary=True)
-    query = "SELECT * FROM student WHERE user = %s"
-    cursor.execute(query, userID)
+    cursor = connection.cursor()
+    query = "SELECT * FROM student WHERE id = %s"
+    cursor.execute(query, (id,))
     user = cursor.fetchone()
-    print(user)
     cursor.close()
 
-    return jsonify({'message': ''})
+    if user is None:
+        return jsonify({'message': 'User not found'}), 404
+    
+    picture_base64 = base64.b64encode(user[2]).decode('utf-8')
 
+    dataUser = {
+        'Id': user[0],
+        'name': user[1],
+        'picture': picture_base64,
+        'format': imghdr.what(None, user[2]),
+        'password': user[3],
+        'users': user[4],
+        'Ls': user[5]
+    }
 
+    return jsonify(dataUser)
 
 
 if __name__ == '__main__':
