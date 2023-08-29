@@ -13,12 +13,15 @@
         </div>
         <button @click="onSubmit" class="login-button">log in</button>
       </form>
+      <button @click="checkAuthStatus">Verificar Estado de Autenticación</button>
     </div>
   </div>
 </template>
 
 <script>
 import axios from 'axios';
+import { mapState } from 'vuex';
+
 
 export default {
   name: "LoginU",
@@ -28,6 +31,10 @@ export default {
       password: '',
     };
   },
+  computed: {
+  ...mapState(['auth'])
+},
+
   methods: {
   async onSubmit() {
     try {
@@ -38,13 +45,17 @@ export default {
 
       console.log(response.data.message);
       if (response.data.message === 'Login successful') {
+        localStorage.setItem('isLoggedIn', 'true')
         await this.$store.dispatch('doLogin', this.user);
         this.$router.push({ name: 'DiagnosisState' });
       }
     } catch (error) {
       console.error(error);
     }
-  }
+  },
+  checkAuthStatus() {
+      console.log('Estado de autenticación:', this.auth);
+    }
 },
 }
 </script>

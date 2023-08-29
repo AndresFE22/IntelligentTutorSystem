@@ -9,9 +9,15 @@ import 'vuetify/dist/vuetify.css';
 import { BootstrapVue, IconsPlugin } from 'bootstrap-vue';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
+
+
+//---------------------Componentes--------------------//
+
+
 import Home from "./components/Home.vue";
 import login from "./components/loginU.vue"
 import register from "./components/registerU.vue"
+import profile from "./components/ProfileUser.vue"
 import DiagnosisState from "./components/diagnosisState.vue";
 import DiagnosisStyles from "./components/diagnosisStyles.vue"; 
 import responseStyles from "./components/responseStyles.vue"
@@ -19,6 +25,11 @@ import ActivityGlobal from "./components/ResourcesComponent/ResourcesViewGlobal"
 import ActivitySequential from "./components/ResourcesComponent/ResourcesViewSequential.vue"
 import diagnosisStateEvaluation from "./components/diagnosisStateEvaluation.vue"
 import ActivityITS from "./components/ActivityITS.vue"
+
+
+//------------------------//--------------------------------//
+
+
 
 Vue.config.productionTip = false;
 
@@ -42,6 +53,12 @@ const routes = [
     path: "/register",
     name: "register",
     component: register,
+  },
+  {
+    path: "/profile",
+    name: "profile",
+    component: profile,
+    meta: { requiresAuth: true }
   },
   {
     path: "/DiagnosisState",
@@ -93,11 +110,13 @@ const router = new VueRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  if (to.matched.some((record) => record.meta.requiresAuth)) {
+  const isLoggedIn = localStorage.getItem('isLoggedIn');
+  console.log('isLoggedIn:', isLoggedIn); // Agrega este console.log para verificar 
+    if ( isLoggedIn && to.matched.some((record) => record.meta.requiresAuth)) {
     if (store.state.auth) {
       next();
     } else {
-      next({ name: "Login" });
+      next({ name: "Home" });
     }
   } else {
     next();
@@ -109,7 +128,7 @@ const vuetify = new Vuetify();
 
 new Vue({
   router,
-  vuetify,
+  vuetify,  
   store,
   render: h => h(App),
 }).$mount('#app');

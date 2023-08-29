@@ -365,6 +365,22 @@ def activity():
         'data_incorrect_answer': data_incorrect_answer
     })
 
+@cross_origin
+@app.route('/dataUser', methods=['GET'])
+def resultsStyles():
+    connection.reconnect()
+    userID = request.get_json()
+    cursor = connection.cursor(dictionary=True)
+    query = "SELECT * FROM student WHERE user = %s"
+    cursor.execute(query, userID)
+    user = cursor.fetchone()
+    print(user)
+    cursor.close()
+
+    return jsonify({'message': ''})
+
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)

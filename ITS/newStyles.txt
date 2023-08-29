@@ -3,19 +3,14 @@
 
   
 
-  },
-    methods: {
+Comunicación con el servidor:
+Utiliza Axios u otra biblioteca para realizar solicitudes al servidor (backend). Crea rutas en tu servidor para manejar las solicitudes de obtención de información del usuario. Estas rutas deben aceptar el ID del usuario como parámetro y buscar en la base de datos la información asociada a ese ID.
 
-        axiosCallEvaluation(){
-            axios
-            .get('/api/Activity')
-            .then(response => {
-                this.hiddenQuestions  = response.data.data_incorrect_answer
-                console.log(response.data.data_incorrect_answer)
-                console.log("hidden", this.hiddenQuestions)
+Componente de perfil dinámico:
+En el componente de perfil de Vue.js, utiliza las respuestas del servidor para mostrar la información del usuario correctamente. Puedes obtener los datos del usuario al montar el componente o cuando el usuario inicie sesión.
 
-            })
-            .catch(error => {
-                console.log(error, 'error al capturar respuestas incorrectas')
-            })
-        },
+Seguridad:
+Asegúrate de implementar medidas de seguridad para proteger la información del usuario. Esto incluye la protección contra ataques de inyección SQL y la autenticación adecuada para que solo los usuarios autenticados puedan acceder a sus perfiles.
+
+Actualizar la información del perfil:
+Si deseas permitir que los usuarios actualicen su información, crea rutas y componentes adicionales para la edición del perfil. Estos componentes deben comunicarse con el servidor para actualizar los datos en la base de datos.

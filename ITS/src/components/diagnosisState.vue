@@ -6,6 +6,7 @@
         <div v-if="!quizStarted">
           <h4>Welcome! Get ready to answer some questions about climate change.</h4>
           <br>
+          <button @click="checkAuthStatus">Verificar Estado de Autenticación</button>
           <button class="btn btn-primary" @click="startQuiz">Start</button>
         </div>
         <div v-else>
@@ -123,6 +124,8 @@ button {
   <script>
 
 import axios from 'axios';
+import { mapState } from 'vuex';
+
 
   export default {
     data() {
@@ -386,6 +389,9 @@ import axios from 'axios';
         answers: []
       };
     },
+    computed: {
+  ...mapState(['auth'])
+},
     methods: {
         startQuiz() {
       this.quizStarted = true;
@@ -412,7 +418,10 @@ import axios from 'axios';
             .catch(error => {
                 console.log(error, 'Error al enviar')
             }) 
-        }
+        },
+        checkAuthStatus() {
+      console.log('Estado de autenticación:', this.auth);
+    }
 
     }
   };
