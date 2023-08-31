@@ -147,7 +147,7 @@
 
 .profile-sidebar {
   width: 300px; 
-  background-color: #f0f0f0; 
+  background-color: #ffffff; 
   padding: 20px; 
   position: fixed; 
   top: 0;

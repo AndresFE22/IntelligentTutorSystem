@@ -14,3 +14,52 @@ Asegúrate de implementar medidas de seguridad para proteger la información del
 
 Actualizar la información del perfil:
 Si deseas permitir que los usuarios actualicen su información, crea rutas y componentes adicionales para la edición del perfil. Estos componentes deben comunicarse con el servidor para actualizar los datos en la base de datos.
+
+
+
+Aquí tienes un ejemplo de cómo puedes hacer una consulta de cambio de contraseña en Flask, utilizando una base de datos MySQL:
+
+```python
+from flask import Flask, request, jsonify
+from flask_mysqldb import MySQL
+
+app = Flask(__name__)
+
+# Configuración de la base de datos MySQL
+app.config['MYSQL_HOST'] = 'localhost'
+app.config['MYSQL_USER'] = 'usuario'
+app.config['MYSQL_PASSWORD'] = 'contraseña'
+app.config['MYSQL_DB'] = 'basededatos'
+mysql = MySQL(app)
+
+@app.route('/cambiar-contrasena', methods=['PUT'])
+def cambiar_contrasena():
+    # Obtener los datos de la solicitud
+    id_usuario = request.form['id']
+    contrasena_actual = request.form['contrasena_actual']
+    nueva_contrasena = request.form['nueva_contrasena']
+
+    # Verificar si la contraseña actual es correcta en la base de datos
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT password FROM usuarios WHERE id = %s", [id_usuario])
+    resultado = cur.fetchone()
+
+    if resultado:
+        if resultado[0] == contrasena_actual:
+            # Actualizar la contraseña en la base de datos
+            cur.execute("UPDATE usuarios SET password = %s WHERE id = %s", (nueva_contrasena, id_usuario))
+            mysql.connection.commit()
+            cur.close()
+            return jsonify({'mensaje': 'Contraseña actualizada correctamente'})
+        else:
+            return jsonify({'mensaje': 'La contraseña actual es incorrecta'})
+    else:
+        return jsonify({'mensaje': 'Usuario no encontrado'})
+
+if __name__ == '__main__':
+    app.run()
+```
+
+En este ejemplo, se asume que tienes una tabla llamada "usuarios" en tu base de datos MySQL, con una columna "password" que almacena las contraseñas de los usuarios. Asegúrate de reemplazar los valores de configuración de la base de datos con los correctos.
+
+Para probar esta ruta, puedes hacer una solicitud PUT a `http://localhost:5000/cambiar-contrasena` con los parámetros `id`, `contrasena_actual` y `nueva_contrasena` en el cuerpo de la solicitud. La respuesta será un mensaje JSON indicando si la contraseña se cambió correctamente o si hubo algún error.
