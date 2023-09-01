@@ -95,20 +95,15 @@ def login():
 def changePassword():
     id_user = request.form['id']
     current_password = request.form['currentPassword']
-    print(current_password)
     new_password = request.form['newPassword']
-    print(new_password)
-    current_hashed_password = bcrypt.generate_password_hash(current_password).decode('utf-8')
     new_hashed_password = bcrypt.generate_password_hash(new_password).decode('utf-8')
     cursor = connection.cursor()
     query = "SELECT password FROM student WHERE id = %s"
     cursor.execute(query, (id_user,))
     results = cursor.fetchone()
-    print('current', current_hashed_password)
-    print('results', results[0])
     
     if results:
-        if results[0] == current_hashed_password:    
+        if bcrypt.check_password_hash(results[0], current_password):    
             cursor.execute("UPDATE student SET password = %s WHERE id = %s", (new_hashed_password, id_user))
             cursor.close()
             return jsonify({'message': 'password updated successfully'})
