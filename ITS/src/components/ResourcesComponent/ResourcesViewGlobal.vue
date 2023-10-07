@@ -106,7 +106,8 @@ export default {
 },
   methods: {
     axiosCallGlobal() {
-      axios.get('/api/Activity')
+      const id_student = this.$store.state.userId
+      axios.get(`/api/Activity/${id_student}`) 
         .then(response => {
           this.resources = response.data.resource_list;
           this.additionalResources_1 = response.data.resource_list_additional_1

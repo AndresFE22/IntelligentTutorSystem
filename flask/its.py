@@ -105,7 +105,7 @@ class LearningGoals:
                         {"name": "t25", "completed": False},
                         {"name": "t26", "completed": False},
                         {"name": "t27", "completed": False}
-                    ]
+                    ] 
                 }
             }
         }  

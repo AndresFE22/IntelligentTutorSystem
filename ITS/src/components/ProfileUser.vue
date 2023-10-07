@@ -61,14 +61,14 @@ export default {
       
     };
   },
-  async mounted() {
-    try {
-      const response = await axios.get(`/api/dataUser/${this.userId}`);
-      this.user = response.data;
-    } catch (error) {
-      console.error(error);
-    }
-  },
+  // async mounted() {
+  //   try {
+  //     const response = await axios.get(`/api/dataUser/${this.userId}`);
+  //     this.user = response.data;
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // },
   methods: {
     getImageUrl(imagenBase64, format) {
       return `data:image/${format};base64,${imagenBase64}`;

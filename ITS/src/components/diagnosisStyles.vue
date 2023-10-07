@@ -301,6 +301,7 @@ import { mapState } from 'vuex';
     computed: {
   ...mapState(['auth'])
 },
+
     methods: {
         startQuiz() {
       this.quizStarted = true;
@@ -316,7 +317,8 @@ import { mapState } from 'vuex';
         }
       },
         submitAnswers() {
-            axios.post('/api/test', { answers : this.answers})
+          const id_student = this.$store.state.userId
+            axios.post(`/api/test/${id_student}`, { answers : this.answers})
             .then(response => {
                 console.log(response.data);
                 this.showText = false;

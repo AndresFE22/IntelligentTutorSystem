@@ -127,6 +127,7 @@ import axios from 'axios';
 export default {
   data() {
     return {
+      id_student: null,
       showSubmitMessage: false,
       showMessage: true,
       quizStarted: false,
@@ -433,8 +434,9 @@ export default {
     },
 
     axiosCallEvaluation(){
+      const id_student = this.$store.state.userId
             axios
-            .get('/api/Activity')
+            .get(`/api/Activity/${id_student}`)
             .then(response => {
                 this.hiddenQuestions  = response.data.data_incorrect_answer
                 console.log(response.data.data_incorrect_answer)
@@ -458,7 +460,8 @@ export default {
       }
     },
          submitAnswers() {
-          axios.post('/api/diagnosisEvaluation', { answers : this.answers})
+          const id_student = this.$store.state.userId
+          axios.post(`/api/diagnosisEvaluation/${id_student}`, { answers : this.answers})
           .then(response => {
               console.log(response.data);
               this.showSubmitMessage = true;

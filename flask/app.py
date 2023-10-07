@@ -9,6 +9,7 @@ import os
 import mysql.connector
 import base64
 import imghdr
+import pickle
 
 
 app = Flask(__name__,
@@ -86,7 +87,7 @@ def login():
     print(user)
     cursor.close()
     if user and bcrypt.check_password_hash(user['password'], data['password']):
-        return jsonify({'message': 'Login successful', 'user': {'id': user['id']}})
+        return jsonify({'message': 'Login successful', 'user': {'id': user['id']},})
     else:
         return jsonify({'message': 'Login failed'})
     
@@ -114,8 +115,9 @@ def changePassword():
     
 
 @cross_origin
-@app.route('/diagnosis', methods=['POST'])
-def diagnosis_lowlvl():
+@app.route('/diagnosis/<int:id>', methods=['POST'])
+def diagnosis_lowlvl(id):
+    print('id estudiante', id)
     questions = [
         {"activity_name": "t1", "correct_answer": "a"},
         {"activity_name": "t2", "correct_answer": "c"},
@@ -175,11 +177,30 @@ def diagnosis_lowlvl():
 
     session['recommended_path'] = recommended_path
     session['incorrect_activities'] = incorrect_answer
+
+    if connection.is_connected():
+        cursor = connection.cursor()
+
+        id_estudiante = id 
+        incorrect_answer_json = json.dumps(incorrect_answer)  # Convertir a JSON
+        recommended_path_json = json.dumps(recommended_path)  # Convertir a JSON
+
+        consulta = "UPDATE student SET TestTopic = true, incorrect_answer = %s, recommendPath = %s WHERE id = %s"
+
+        # Ejecutar la consulta
+        cursor.execute(consulta, (incorrect_answer_json, recommended_path_json, id_estudiante))
+
+    # Confirmar la transacción
+        connection.commit()
+
+    # Cerrar el cursor y la conexión
+        cursor.close()
+    else:
+        print("No se pudo establecer la conexión a la base de datos.")
     return jsonify(response, recommended_path, 'Done!')
 
-
-@app.route('/diagnosisEvaluation', methods=['POST'])
-def diagnosisEvaluation():
+@app.route('/diagnosisEvaluation/<int:id>', methods=['POST'])
+def diagnosisEvaluation(id):
     questions = [
         {"activity_name": "t1", "correct_answer": "a"},
         {"activity_name": "t2", "correct_answer": "c"},
@@ -239,11 +260,31 @@ def diagnosisEvaluation():
 
     session['recommended_path'] = recommended_path
     session['incorrect_activities'] = incorrect_answer
+    if connection.is_connected():
+        cursor = connection.cursor()
+
+        id_estudiante = id 
+        incorrect_answer_json = json.dumps(incorrect_answer)  # Convertir a JSON
+        recommended_path_json = json.dumps(recommended_path)  # Convertir a JSON
+
+        consulta = "UPDATE student SET incorrect_answer = %s, recommendPath = %s WHERE id = %s"
+
+        # Ejecutar la consulta
+        cursor.execute(consulta, (incorrect_answer_json, recommended_path_json, id_estudiante))
+
+    # Confirmar la transacción
+        connection.commit()
+
+    # Cerrar el cursor y la conexión
+        cursor.close()
+    else:
+        print("No se pudo establecer la conexión a la base de datos.")
+
     return jsonify('Done!', response )
 
 @cross_origin
-@app.route('/test', methods=['POST', 'GET'])
-def testStyles():
+@app.route('/test/<int:id>', methods=['POST', 'GET'])
+def testStyles(id):
     data = request.json
     print("data", data)
     answers = []
@@ -287,16 +328,73 @@ def testStyles():
 
     session['results'] = results
 
+    if connection.is_connected():
+        cursor = connection.cursor()
+
+        id_estudiante = id
+        style_list_json = json.dumps(results)  # Convertir a JSON
+
+
+        consulta = "UPDATE student SET TestStyle = true, style_list = %s WHERE id = %s"
+
+    # Ejecutar la consulta
+        cursor.execute(consulta, (style_list_json, id_estudiante))
+
+    # Confirmar la transacción
+        connection.commit()
+
+    # Cerrar el cursor y la conexión
+        cursor.close()
+    else:
+        print("No se pudo establecer la conexión a la base de datos.")
+
     return jsonify('styles Done', results)
 
 
 
 @cross_origin
-@app.route('/Activity', methods=['GET', 'POST'])
-def activity():
-    incorrect_activities = session.get('incorrect_activities')
-    recommended_path = session.get('recommended_path')
-    style_list_n = session.get('results')
+@app.route('/Activity/<int:id>', methods=['GET', 'POST'])
+def activity(id):
+    id_estudiante = id
+    incorrect_answer = []
+    recommendPath = []
+    style_list_s = []
+    if connection.is_connected():
+        cursor = connection.cursor()
+
+        consulta = "SELECT incorrect_answer, recommendPath, style_list FROM student WHERE id = %s"
+        cursor.execute(consulta, (id_estudiante,))  
+
+    
+        resultado = cursor.fetchone()
+        if resultado is not None:
+            incorrect_answer_serializado = resultado[0]
+            recommendPath_serializado = resultado[1]
+            style_list_serializado = resultado[2]
+        # Deserializar el arreglo
+            incorrect_answer = json.loads(incorrect_answer_serializado)
+            recommendPath = json.loads(recommendPath_serializado)
+            style_list_s = json.loads(style_list_serializado)
+            print('incorrect_answer', incorrect_answer)
+            print('recommendPath', recommendPath)
+            print('style_list_s', style_list_s)
+
+            
+
+    # Cerrar el cursor y la conexión
+        cursor.close()
+    else:
+        print("No se pudo establecer la conexión a la base de datos.")
+    incorrect_activities = incorrect_answer
+    recommended_path = recommendPath
+    style_list_n = style_list_s
+
+
+    print('incorrect', incorrect_activities)
+    print('recommended_path', recommended_path)
+    print('style_list_n', style_list_n)
+
+
     last_item = style_list_n.pop()
     style_list = style_list_n
     # nav_menu = last_item['dominant_style']
@@ -362,6 +460,9 @@ def activity():
     print('Additional1', additional_pt_resources_1)
     print('Additional2', additional_pt_resources_2)
     print('incorrect_activities', incorrect_activities)
+    print('recommended_path', recommended_path)
+    print('style_list_n', style_list_n)
+
 
     data_incorrect_answer = [int(item[1:]) for item in incorrect_activities if item.startswith(
         't') and item[1:].isdigit()]
@@ -383,6 +484,7 @@ def dataUser(id):
     cursor.execute(query, (id,))
     user = cursor.fetchone()
     cursor.close()
+    print(user)
 
     if user is None:
         return jsonify({'message': 'User not found'}), 404

@@ -407,8 +407,10 @@ import { mapState } from 'vuex';
         }
       },
 
-           submitAnswers() {
-            axios.post('/api/diagnosis', { answers : this.answers})
+          submitAnswers() {
+            const id_student = this.$store.state.userId
+            console.log('id', id_student)
+            axios.post(`/api/diagnosis/${id_student}`, { answers : this.answers})
             .then(response => {
                 console.log(response.data);
                 this.showSubmitMessage = true;
@@ -425,6 +427,9 @@ import { mapState } from 'vuex';
 
     }
   };
+
+
+
   </script>
   
   
