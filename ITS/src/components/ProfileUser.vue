@@ -35,7 +35,24 @@
       <div v-if="message" class="message">{{ message }}</div>
     </div>
   </b-modal>
+  <div class="logout">
+  <input v-b-modal.modal-logout type="button" class="toggle-button" value="Logout" />
+</div>
+<b-modal id="modal-logout">
+  <div class="containModal">
+    <center><h2>¿Cerrar sesión?</h2></center>
+    <div class="button-container">
+      <!-- <v-btn @click="logout">Sí</v-btn>
+      <v-btn @click="$bvModal.hide('modal-logout')">No</v-btn> -->
+    </div>
   </div>
+  <template #modal-ok>
+    <input @click="logout" type="button" value="Si">
+  </template>
+</b-modal>
+
+  </div>
+  
 </template>
 
 <script>
@@ -61,14 +78,15 @@ export default {
       
     };
   },
-  // async mounted() {
-  //   try {
-  //     const response = await axios.get(`/api/dataUser/${this.userId}`);
-  //     this.user = response.data;
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // },
+  async mounted() {
+    const id_student = this.$store.state.userId
+    try {
+      const response = await axios.get(`/api/dataUser/${id_student}`);
+      this.user = response.data;
+    } catch (error) {
+      console.error(error);
+    }
+  },
   methods: {
     getImageUrl(imagenBase64, format) {
       return `data:image/${format};base64,${imagenBase64}`;
@@ -91,7 +109,12 @@ export default {
     .catch(error =>  {
       console.error(error)
     })
-  }
+  }, 
+  logout() {
+  this.$store.commit('clearUserId');
+  this.$store.commit('doLogout');
+  this.$router.push('/');
+}
   },
 };
 </script>
@@ -161,6 +184,16 @@ export default {
   margin-bottom: 10px;
   margin-top: 10px;
   color: rgb(0, 162, 255);
+}
+
+.logout {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  margin-bottom: 10px;
+  margin-top: 10px;
+  color: rgb(255, 0, 0);
 }
 
 

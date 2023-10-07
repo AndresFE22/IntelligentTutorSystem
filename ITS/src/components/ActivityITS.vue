@@ -54,7 +54,7 @@
       <i class="fas fa-bars"></i>
     </b-button>
       <b-collapse id="profileCollapse" class="profile-sidebar" :visible="isProfileSidebarOpen">
-      <Profile :userId="userId" />
+      <Profile />
     </b-collapse>
     </div>
   </template>
