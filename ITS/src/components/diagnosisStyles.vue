@@ -1,4 +1,4 @@
-<template>
+<template v-for="mostrarComponente">
     <div class="background">
       <div class="container">
         <h1 class="mb-4">Test Learning Styles</h1>
@@ -130,6 +130,7 @@ import { mapState } from 'vuex';
         quizStarted: false,
         showText: true,
         ShowText_l: false,
+        mostrarComponente: false,
         questions: [
           {
             question: 'Entiendo mejor algo:',
@@ -301,8 +302,29 @@ import { mapState } from 'vuex';
     computed: {
   ...mapState(['auth'])
 },
+  
 
+// created() {
+//     this.StateVerified();
+//   },
     methods: {
+      // StateVerified(){
+      //       const id_student = this.$store.state.userId
+      //       axios
+      //       .get(`/api/styleVerified/${id_student}`)
+      //       .then(response => {
+      //           const resultado = response.data
+      //           if (resultado.TestStyle === 1) {
+      //             this.$router.push('/ActivityITS')
+      //           } else {
+      //             this.mostrarComponente = true
+      //           }
+
+      //       })
+      //       .catch(error => {
+      //           console.log(error, 'error al cargar estado')
+      //       })},
+
         startQuiz() {
       this.quizStarted = true;
       this.currentQuestion = 0;

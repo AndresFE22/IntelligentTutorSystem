@@ -115,6 +115,43 @@ def changePassword():
     
 
 @cross_origin
+@app.route('/stateVerified/<int:id>', methods=['GET'])
+def stateVerified(id):
+
+    cursor = connection.cursor()
+    id_estudiante = id 
+    consulta = "SELECT TestTopic, TestStyle FROM student WHERE id = %s"
+    # Ejecutar la consulta
+    cursor.execute(consulta, (id_estudiante,))
+    result = cursor.fetchone()
+    state_topic = result[0]
+    state_style = result[1]
+    cursor.close()
+
+    print('state_topic', state_topic)
+    print('state_style', state_style)
+
+
+    return jsonify({"TestTopic": state_topic, "TestStyle": state_style})
+
+
+@cross_origin
+@app.route('/styleVerified/<int:id>', methods=['GET'])
+def styleVerified(id):
+
+    cursor = connection.cursor()
+    id_estudiante = id 
+    consulta = "SELECT TestStyle FROM student WHERE id = %s"
+    # Ejecutar la consulta
+    cursor.execute(consulta, (id_estudiante,))
+    state = cursor.fetchone()[0]
+    cursor.close()
+
+    print('state', state)
+
+    return jsonify({"TestStyle": state})
+
+@cross_origin
 @app.route('/diagnosis/<int:id>', methods=['POST'])
 def diagnosis_lowlvl(id):
     print('id estudiante', id)

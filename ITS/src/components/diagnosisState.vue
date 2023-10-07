@@ -1,4 +1,4 @@
-<template>
+<template v-if="mostrarComponente">
     <div class="background">
       <div class="container">
         <h1 v-if="showTitle" class="mb-4">Climate Change Quiz</h1>
@@ -134,6 +134,7 @@ import { mapState } from 'vuex';
         showMessage: true,
         quizStarted: false,
         showTitle: true,
+        mostrarComponente: false,
         questions: [
           {
             question: 'Which gas is known as the "silent killer" because of its role in trapping heat in the atmosphere?',
@@ -393,6 +394,24 @@ import { mapState } from 'vuex';
   ...mapState(['auth'])
 },
     methods: {
+      StateVerified(){
+            const id_student = this.$store.state.userId
+            axios
+            .get(`/api/stateVerified/${id_student}`)
+            .then(response => {
+                const resultado = response.data
+                console.log(resultado)
+                if (resultado.TestTopic === 1) {
+                  this.$router.push('/DiagnosisStyle')
+                } else {
+                  this.mostrarComponente = true
+                }
+
+            })
+            .catch(error => {
+                console.log(error, 'error al cargar estado')
+            })},
+
         startQuiz() {
       this.quizStarted = true;
       this.currentQuestion = 0;

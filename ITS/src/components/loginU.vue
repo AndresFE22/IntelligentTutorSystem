@@ -37,29 +37,41 @@ export default {
 
 
   methods: {
-  async onSubmit() {
-    try {
-      const response = await axios.post('/api/login', {
-        user: this.user,
-        password: this.password
-      });
- 
-      console.log(response.data.message);
-      console.log(response.data.user.id);
-      if (response.data.message === 'Login successful') {
-        localStorage.setItem('isLoggedIn', 'true')
-        const userId = response.data.user.id
-        const userData = response.data.user
-        this.$store.commit('setUserId', userId)
-        this.$store.commit('setUserData', userData)
-        localStorage.setItem('userId', userId)
-        await this.$store.dispatch('doLogin', this.user);
+    async onSubmit() {
+  try {
+    const response = await axios.post('/api/login', {
+      user: this.user,
+      password: this.password
+    });
+
+    console.log(response.data.message);
+    console.log(response.data.user.id);
+    if (response.data.message === 'Login successful') {
+      localStorage.setItem('isLoggedIn', 'true')
+      const userId = response.data.user.id
+      const userData = response.data.user
+      this.$store.commit('setUserId', userId)
+      this.$store.commit('setUserData', userData)
+      localStorage.setItem('userId', userId)
+      await this.$store.dispatch('doLogin', this.user);
+
+      const estadoResponse = await axios.get(`/api/stateVerified/${userId}`);
+      const estadoData = estadoResponse.data;
+      console.log(estadoData);
+
+      if (estadoData.TestTopic === 0) {
         this.$router.push({ name: 'DiagnosisState' });
+      } else if (estadoData.TestStyle === 0) {
+        this.$router.push({ name: 'DiagnosisStyles' });
+      } else {
+        this.$router.push({ name: 'ActivityITS' });
       }
-    } catch (error) {
-      console.error(error);
     }
-  },
+  } catch (error) {
+    console.error(error);
+  }
+},
+
   checkAuthStatus() {
       console.log('Estado de autenticación:', this.auth);
     }
