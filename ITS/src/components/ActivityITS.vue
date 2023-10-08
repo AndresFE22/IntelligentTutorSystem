@@ -26,7 +26,10 @@
         </b-dropdown-item>
     </b-dropdown>
         <li class="nav-item">
-          <a class="nav-link" :class="{ 'active': activeTab === 'evaluationTab' }" @click="changeTab('evaluationTab')">Evaluación</a>
+          <a class="nav-link" :class="{ 'active': activeTab === 'evaluationTab' }" @click="changeTab('evaluationTab')">Evaluation</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" :class="{ 'active': activeTab === 'ProfileTab' }" @click="changeTab('ProfileTab')">Profile</a>
         </li>
       </ul>
       <div id="ActivitySequential" v-show="activeTab === 'sequentialTab'">
@@ -50,18 +53,15 @@
       <div id="diagnosisStateEvaluation" v-show="activeTab === 'evaluationTab'">
         <diagnosis-state-evaluation v-if="activeTab === 'evaluationTab'" />
       </div>
-      <b-button variant="primary" class="mobile-toggle-button" @click="toggleProfileSidebar">
-      <i class="fas fa-bars"></i>
-    </b-button>
-      <b-collapse id="profileCollapse" class="profile-sidebar" :visible="isProfileSidebarOpen">
-      <Profile />
-    </b-collapse>
+      <div id="profile" v-show="activeTab === 'ProfileTab'">
+        <Profile v-if="activeTab === 'ProfileTab'" />
+      </div>
     </div>
   </template>
   
   <script>
   
-  import Profile from './ProfileUser.vue'
+  import Profile from './ProfileUser.vue';
   import ResourcesViewsGlobal from './ResourcesComponent/ResourcesViewGlobal.vue';
   import ResourcesViewsSequential from './ResourcesComponent/ResourcesViewSequential.vue';
   import ResourceAdditionalS_1 from './ResourcesComponent/AdditionalResources/AdditionalRsequential/additionalResourceS_1.vue'
@@ -70,7 +70,6 @@
   import ResourceAdditionalG_2 from './ResourcesComponent/AdditionalResources/AdditionalRglobal/additionalResourceG_2.vue'
   import DiagnosisStateEvaluation from './diagnosisStateEvaluation.vue';
   import axios from 'axios';
-  import { BCollapse } from 'bootstrap-vue';
 
   /*import { BPopover } from 'bootstrap-vue';
 */
@@ -84,8 +83,7 @@
       ResourceAdditionalG_2,
       ResourceAdditionalS_1,
       ResourceAdditionalS_2,
-      Profile,
-      BCollapse
+      Profile
       /**/
     },
     data() {
@@ -94,7 +92,8 @@
         activeTab: '', 
         additionalResource_1: [],
         additionalResource_2: [],
-        isProfileSidebarOpen: false
+        isProfileSidebarOpen: false,
+        showProfile: false
 
       };
     },

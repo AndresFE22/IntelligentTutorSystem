@@ -59,9 +59,9 @@ export default {
       const estadoData = estadoResponse.data;
       console.log(estadoData);
 
-      if (estadoData.TestTopic === 0) {
+      if (estadoData.TestTopic === 0 || estadoData.TestTopic === null) {
         this.$router.push({ name: 'DiagnosisState' });
-      } else if (estadoData.TestStyle === 0) {
+      } else if (estadoData.TestStyle === 0 || estadoData.TestStyle === null) {
         this.$router.push({ name: 'DiagnosisStyles' });
       } else {
         this.$router.push({ name: 'ActivityITS' });

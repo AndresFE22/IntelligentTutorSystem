@@ -1,65 +1,208 @@
-('Intuitivo', 'Activo', 'Visual')
+<template>
+  <div class="profile">
+    <h2>my profile</h2>
+    <div class="profile-info">
+      <div class="imgbox">
+        <div class="circle">
+          <img v-if="user.picture" :src="getImageUrl(user.picture, user.format)" :alt="user.user" class="imagen">
+        </div>
+      </div>
+      <div class="conItem">
+        <div class="item">
+        <p><strong>ID:</strong> {{ user.Id }} </p>
+      </div>
+      <div class="item">
+        <p><strong>Name:</strong> {{ user.name }} </p>
+      </div>
+      <div class="item">
+        <p><strong>User:</strong> {{ user.users }} </p>
+      </div>
+      <div class="item">
+        <p><strong>Learning Style:</strong> {{ user.Ls }} </p>
+      </div>
+      <div class="change">
+        <input v-b-modal.modal-center type="button" class="toggle-button" value="change password"/>
+      </div>
+      </div>
+    </div>
+    <b-modal id="modal-center" centered title="Change password">
+    <div class="containModal">
+      <v-text-field v-model="currentPassword" label="Enter your current password"></v-text-field>
+      <v-text-field v-model="newPassword" label="Enter your new password"></v-text-field>
+      <br>
+      <center><v-btn @click="changePassword">Change password</v-btn></center>
+      <br>
+      <div v-if="message" class="message">{{ message }}</div>
+    </div>
+  </b-modal>
+  <div class="logout">
+  <input v-b-modal.modal-logout type="button" class="toggle-button" value="Logout" />
+</div>
+<b-modal id="modal-logout">
+  <div class="containModal">
+    <center><h2>¿Cerrar sesión?</h2></center>
+    <div class="button-container">
+      <!-- <v-btn @click="logout">Sí</v-btn>
+      <v-btn @click="$bvModal.hide('modal-logout')">No</v-btn> -->
+    </div>
+  </div>
+  <template #modal-ok>
+    <input @click="logout" type="button" value="Si">
+  </template>
+</b-modal>
 
-
+  </div>
   
+</template>
 
-Comunicación con el servidor:
-Utiliza Axios u otra biblioteca para realizar solicitudes al servidor (backend). Crea rutas en tu servidor para manejar las solicitudes de obtención de información del usuario. Estas rutas deben aceptar el ID del usuario como parámetro y buscar en la base de datos la información asociada a ese ID.
+<script>
+import axios from 'axios';
+import { mapState } from 'vuex';
 
-Componente de perfil dinámico:
-En el componente de perfil de Vue.js, utiliza las respuestas del servidor para mostrar la información del usuario correctamente. Puedes obtener los datos del usuario al montar el componente o cuando el usuario inicie sesión.
+export default {
+  computed: {
+    ...mapState(['auth']),
+    userId() {
+      return this.$store.state.userId;
+    },
+    hiddenPassword() {
+      return '*'.repeat(this.user.password.length)
+    }
+  },
+  data() {
+    return {
+      user: {},
+      currentPassword: '',
+      newPassword : '',
+      message: ''
+      
+    };
+  },
+  async mounted() {
+    const id_student = this.$store.state.userId
+    try {
+      const response = await axios.get(`/api/dataUser/${id_student}`);
+      this.user = response.data;
+    } catch (error) {
+      console.error(error);
+    }
+  },
+  methods: {
+    getImageUrl(imagenBase64, format) {
+      return `data:image/${format};base64,${imagenBase64}`;
+    },
+    changePassword(){
+    const formData = new FormData()
+    formData.append('id', this.userId)
+    formData.append('currentPassword', this.currentPassword)
+    formData.append('newPassword', this.newPassword)
+    axios
+    .put('/api/changePassword', formData)
+    .then(response => {
+      this.message = response.data.message
+      setTimeout(() => {
+            this.mensaje = "";
+          }, 3000)
+      this.currentPassword = '',
+      this.newPassword = ''
+    })
+    .catch(error =>  {
+      console.error(error)
+    })
+  }, 
+  logout() {
+  this.$store.commit('clearUserId');
+  this.$store.commit('doLogout');
+  this.$router.push('/');
+}
+  },
+};
+</script>
 
-Seguridad:
-Asegúrate de implementar medidas de seguridad para proteger la información del usuario. Esto incluye la protección contra ataques de inyección SQL y la autenticación adecuada para que solo los usuarios autenticados puedan acceder a sus perfiles.
+<style scoped>
+.profile {
+  text-align: center;
+}
 
-Actualizar la información del perfil:
-Si deseas permitir que los usuarios actualicen su información, crea rutas y componentes adicionales para la edición del perfil. Estos componentes deben comunicarse con el servidor para actualizar los datos en la base de datos.
+.imgbox {
+  width: 150px;
+  height: 150px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.circle {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  overflow: hidden;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.imagen {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.mensaje {
+  background-color: green;
+  color: white;
+  padding: 10px;
+  border-radius: 20px;
+}
+
+.profile-info {
+  margin-top: 20px;
+  text-align: left;
+}
+
+.hidden-content {
+  color: #999;
+  font-style: italic;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  background-color: rgba(241, 241, 241, 0.705);
+  padding: 8px;
+  margin-bottom: 10px;
+  margin-top: 10px;
+  border-radius: 15px;
+}
+
+.change {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  margin-bottom: 10px;
+  margin-top: 10px;
+  color: rgb(0, 162, 255);
+}
+
+.logout {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  margin-bottom: 10px;
+  margin-top: 10px;
+  color: rgb(255, 0, 0);
+}
 
 
+.toggle-button{
+ text-decoration: underline;
+} 
 
-Aquí tienes un ejemplo de cómo puedes hacer una consulta de cambio de contraseña en Flask, utilizando una base de datos MySQL:
+strong {
+  color: rgb(0, 162, 255);
 
-```python
-from flask import Flask, request, jsonify
-from flask_mysqldb import MySQL
-
-app = Flask(__name__)
-
-# Configuración de la base de datos MySQL
-app.config['MYSQL_HOST'] = 'localhost'
-app.config['MYSQL_USER'] = 'usuario'
-app.config['MYSQL_PASSWORD'] = 'contraseña'
-app.config['MYSQL_DB'] = 'basededatos'
-mysql = MySQL(app)
-
-@app.route('/cambiar-contrasena', methods=['PUT'])
-def cambiar_contrasena():
-    # Obtener los datos de la solicitud
-    id_usuario = request.form['id']
-    contrasena_actual = request.form['contrasena_actual']
-    nueva_contrasena = request.form['nueva_contrasena']
-
-    # Verificar si la contraseña actual es correcta en la base de datos
-    cur = mysql.connection.cursor()
-    cur.execute("SELECT password FROM usuarios WHERE id = %s", [id_usuario])
-    resultado = cur.fetchone()
-
-    if resultado:
-        if resultado[0] == contrasena_actual:
-            # Actualizar la contraseña en la base de datos
-            cur.execute("UPDATE usuarios SET password = %s WHERE id = %s", (nueva_contrasena, id_usuario))
-            mysql.connection.commit()
-            cur.close()
-            return jsonify({'mensaje': 'Contraseña actualizada correctamente'})
-        else:
-            return jsonify({'mensaje': 'La contraseña actual es incorrecta'})
-    else:
-        return jsonify({'mensaje': 'Usuario no encontrado'})
-
-if __name__ == '__main__':
-    app.run()
-```
-
-En este ejemplo, se asume que tienes una tabla llamada "usuarios" en tu base de datos MySQL, con una columna "password" que almacena las contraseñas de los usuarios. Asegúrate de reemplazar los valores de configuración de la base de datos con los correctos.
-
-Para probar esta ruta, puedes hacer una solicitud PUT a `http://localhost:5000/cambiar-contrasena` con los parámetros `id`, `contrasena_actual` y `nueva_contrasena` en el cuerpo de la solicitud. La respuesta será un mensaje JSON indicando si la contraseña se cambió correctamente o si hubo algún error.
+}
+</style>

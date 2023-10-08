@@ -1,208 +1,121 @@
 <template>
   <div class="profile">
-    <h2>my profile</h2>
-    <div class="profile-info">
-      <div class="imgbox">
-        <div class="circle">
-          <img v-if="user.picture" :src="getImageUrl(user.picture, user.format)" :alt="user.user" class="imagen">
-        </div>
-      </div>
-      <div class="conItem">
-        <div class="item">
-        <p><strong>ID:</strong> {{ user.Id }} </p>
-      </div>
-      <div class="item">
-        <p><strong>Name:</strong> {{ user.name }} </p>
-      </div>
-      <div class="item">
-        <p><strong>User:</strong> {{ user.users }} </p>
-      </div>
-      <div class="item">
-        <p><strong>Learning Style:</strong> {{ user.Ls }} </p>
-      </div>
-      <div class="change">
-        <input v-b-modal.modal-center type="button" class="toggle-button" value="change password"/>
-      </div>
-      </div>
-    </div>
-    <b-modal id="modal-center" centered title="Change password">
-    <div class="containModal">
-      <v-text-field v-model="currentPassword" label="Enter your current password"></v-text-field>
-      <v-text-field v-model="newPassword" label="Enter your new password"></v-text-field>
-      <br>
-      <center><v-btn @click="changePassword">Change password</v-btn></center>
-      <br>
-      <div v-if="message" class="message">{{ message }}</div>
-    </div>
-  </b-modal>
-  <div class="logout">
-  <input v-b-modal.modal-logout type="button" class="toggle-button" value="Logout" />
-</div>
-<b-modal id="modal-logout">
-  <div class="containModal">
-    <center><h2>¿Cerrar sesión?</h2></center>
+    <table class="profile-table">
+      <tr>
+        <td class="profile-picture-cell" rowspan="4">
+          <img :src="user.picture" alt="Foto de perfil" class="round-image" />
+        </td>
+        <td  class="title">Nombre Completo:</td>
+        <td>{{ user.name }}</td>
+      </tr>
+      <tr>
+        <td  class="title">ID de Usuario:</td>
+        <td>{{ user.Id }}</td>
+      </tr>
+      <tr>
+        <td  class="title">Nombre de Usuario:</td>
+        <td>{{ user.users }}</td>
+      </tr>
+      <tr>
+        <td class="title">Estilo de aprendizaje:</td>
+        <td>{{ user.Ls }}</td>
+      </tr>
+    </table>
+
+    <!-- Botones para abrir modales -->
     <div class="button-container">
-      <!-- <v-btn @click="logout">Sí</v-btn>
-      <v-btn @click="$bvModal.hide('modal-logout')">No</v-btn> -->
+      <b-button @click="openModal('TestTopic')">Abrir Test Topic</b-button>
+      <b-button @click="openModal('TestStyle')">Abrir Test Style</b-button>
     </div>
-  </div>
-  <template #modal-ok>
-    <input @click="logout" type="button" value="Si">
-  </template>
-</b-modal>
 
+    <!-- Modales -->
+    <b-modal v-if="modalType === 'TestTopic'" title="Test Topic">
+      Contenido del modal para Test Topic
+    </b-modal>
+    <b-modal v-if="modalType === 'TestStyle'" title="Test Style">
+      Contenido del modal para Test Style
+    </b-modal>
   </div>
-  
 </template>
-
 <script>
+
 import axios from 'axios';
-import { mapState } from 'vuex';
 
 export default {
-  computed: {
-    ...mapState(['auth']),
-    userId() {
-      return this.$store.state.userId;
-    },
-    hiddenPassword() {
-      return '*'.repeat(this.user.password.length)
-    }
-  },
   data() {
     return {
       user: {},
-      currentPassword: '',
-      newPassword : '',
-      message: ''
-      
+      modalType: null
     };
   },
-  async mounted() {
-    const id_student = this.$store.state.userId
+
+  mounted() {
+    this.dataUser()
+  },
+
+  methods: {
+    async dataUser() {
+      const id_student = this.$store.state.userId
     try {
       const response = await axios.get(`/api/dataUser/${id_student}`);
       this.user = response.data;
+      console.log(this.user)
     } catch (error) {
       console.error(error);
     }
-  },
-  methods: {
-    getImageUrl(imagenBase64, format) {
-      return `data:image/${format};base64,${imagenBase64}`;
     },
-    changePassword(){
-    const formData = new FormData()
-    formData.append('id', this.userId)
-    formData.append('currentPassword', this.currentPassword)
-    formData.append('newPassword', this.newPassword)
-    axios
-    .put('/api/changePassword', formData)
-    .then(response => {
-      this.message = response.data.message
-      setTimeout(() => {
-            this.mensaje = "";
-          }, 3000)
-      this.currentPassword = '',
-      this.newPassword = ''
-    })
-    .catch(error =>  {
-      console.error(error)
-    })
-  }, 
-  logout() {
-  this.$store.commit('clearUserId');
-  this.$store.commit('doLogout');
-  this.$router.push('/');
-}
-  },
+    openModal(type) {
+      this.modalType = type;
+    }
+  }
 };
 </script>
 
 <style scoped>
 .profile {
-  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.imgbox {
-  width: 150px;
-  height: 150px;
-  margin: 0 auto;
-  position: relative;
+.title {
+ font-weight: bold;
+ background-color: rgb(223, 223, 223);
+}
+.profile-table {
+  border-collapse: collapse;
+  width: 80%;
+  margin: 20px;
 }
 
-.circle {
-  width: 150px;
-  height: 150px;
-  border-radius: 50%;
-  overflow: hidden;
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+.profile-table td {
+  padding: 8px;
+  border: 1px solid #ccc;
 }
 
-.imagen {
+
+.profile-picture-cell {
+  width: 300px; /* Ajusta el ancho de la celda de la imagen según tus preferencias */
+}
+
+.profile-picture {
+  margin-bottom: 1rem;
+}
+
+.round-image {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.mensaje {
-  background-color: green;
-  color: white;
-  padding: 10px;
-  border-radius: 20px;
 }
 
 .profile-info {
-  margin-top: 20px;
-  text-align: left;
+  margin-bottom: 1rem;
 }
 
-.hidden-content {
-  color: #999;
-  font-style: italic;
-}
-
-.item {
+.button-container {
   display: flex;
-  align-items: center;
-  background-color: rgba(241, 241, 241, 0.705);
-  padding: 8px;
-  margin-bottom: 10px;
-  margin-top: 10px;
-  border-radius: 15px;
-}
-
-.change {
-  display: flex;
-  align-items: center;
   justify-content: center;
-  padding: 8px;
-  margin-bottom: 10px;
-  margin-top: 10px;
-  color: rgb(0, 162, 255);
 }
 
-.logout {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 8px;
-  margin-bottom: 10px;
-  margin-top: 10px;
-  color: rgb(255, 0, 0);
-}
-
-
-.toggle-button{
- text-decoration: underline;
-} 
-
-strong {
-  color: rgb(0, 162, 255);
-
+.b-button {
+  margin: 0 0.5rem;
 }
 </style>

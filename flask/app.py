@@ -9,7 +9,7 @@ import os
 import mysql.connector
 import base64
 import imghdr
-import pickle
+import requests
 
 
 app = Flask(__name__,
@@ -48,16 +48,47 @@ def init():
     return 'servidor esuchando'
 
 @cross_origin
+@app.route('/subirimagen', methods=['POST'])
+def subirimagen():
+    picture = request.files['picture']
+    url = "https://api.imgbb.com/1/upload"
+    payload = {
+        "key": "8de0fc15a938b9bb67ef4936fa7175a7"
+    }
+
+    files = {
+        'image': (picture.filename, picture.stream, picture.mimetype)
+    }
+
+    response = requests.post(url, data=payload, files=files)
+    data = response.json()
+    print(data)
+    enlace = data['data']['url']
+    print(enlace)
+    return enlace
+
+@cross_origin
 @app.route('/register', methods=['POST'])
 def register():
     name = request.form.get('name')
     user = request.form.get('user')
     password = request.form.get('password')
     picture = request.files['picture']
-    pictureData = picture.read()
+    url = "https://api.imgbb.com/1/upload"
+    payload = {
+        "key": "8de0fc15a938b9bb67ef4936fa7175a7"
+    }
+
+    files = {
+        'image': (picture.filename, picture.stream, picture.mimetype)
+    }
+
+    response = requests.post(url, data=payload, files=files)
+    data = response.json()
+    print(data)
+    enlace = data['data']['url']
 
     cursor = connection.cursor()
-
     check_query = "SELECT user FROM student WHERE user = %s"
     cursor.execute(check_query, (user,))
     existing_user = cursor.fetchone()   
@@ -69,7 +100,7 @@ def register():
     hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
     query = "INSERT INTO student (name, picture, password, user) VALUES (%s, %s, %s, %s)"
     print(name, hashed_password, user)
-    cursor.execute(query, (name, pictureData, hashed_password, user,))
+    cursor.execute(query, (name, enlace, hashed_password, user,))
     connection.commit
     cursor.close()
     return jsonify({'message': 'User registered successfully'})
@@ -523,19 +554,24 @@ def dataUser(id):
     cursor.close()
     print(user)
 
+    recommendPath_serializado = user[9]
+    style_list_serializado = user[10]
+
+    recommendPath = json.loads(recommendPath_serializado)
+    style_list = json.loads(style_list_serializado)
+
     if user is None:
         return jsonify({'message': 'User not found'}), 404
     
-    picture_base64 = base64.b64encode(user[2]).decode('utf-8')
-
     dataUser = {
         'Id': user[0],
         'name': user[1],
-        'picture': picture_base64,
-        'format': imghdr.what(None, user[2]),
-        'password': user[3],
-        'users': user[4],
-        'Ls': user[5]
+        'password': user[2],
+        'users': user[3],
+        'picture': user[4],
+        'Ls': user[5],
+        'RecommendPath': recommendPath,
+        'styleList': style_list
     }
 
     return jsonify(dataUser)
